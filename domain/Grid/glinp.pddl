@@ -1,0 +1,25 @@
+(define (problem pro-grid1)
+        (:domain grid1)
+        (:init
+            (and
+              (not (gotkey))
+              (not (isopen))
+              (= (xagt) 0)
+              (= (yagt) 0)
+              (> (width) 0)
+              (> (height) 0)
+              (= (xkey) (width))
+              (= (ykey) 0)
+              (= (xlock) (width))
+              (= (ylock) (height))
+            )
+        )
+        (:goal (and
+                   (gotkey)
+                   (isopen)
+                   (= (xagt) 0)
+                   (= (yagt) (height))
+               )
+        )
+)
+
