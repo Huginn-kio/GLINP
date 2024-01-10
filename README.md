@@ -16,7 +16,7 @@ The framework first generate planning program with Lin et al.'s states or random
 
 - The version of python's operating environment is 3.8.10.
 
-- The access permission of Metric-FF planner  needs to be changed before running. e.g.chmod 777 ./ff
+- The access permission of Metric-FF planner  needs to be changed before running. e.g.chmod 777 ./generate/ff
 
 ------
 

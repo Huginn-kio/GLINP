@@ -1,117 +1,27 @@
-import copy
 import re
 
-from datastructure import Program
+from generate.datastructure import Program
 from domain import Switch
-from util import isCremental, is_number, generateZ3Variable, is2DArray
+from utils.util import isCremental, generateZ3Variable, is2DArray, getNodeIndex, addEdge, clearNodeIndex, \
+    initGraph, isAcyclic, condAct2Logic
 from verifyPseudoProgram import pseudoProgram2Logic, isPseudo
 from z3 import *
 
 # translate a retricted planning program
-actionList = {}
 iteN = 0
 
-
 # check whether a prorgam is a retricted planning program
-nodeIndex = {}
-visit = []
-stack = []
-cyclePath = []
-edgeTo = {}
-g = []
-maxDepth = 0
-isDAG = True
-
-
-def initGraph(len):
-    global g
-    g = [list() for i in range(len)]  # graph
-
-
-def addEdge(ia, ib):
-    global g
-    if ib not in g[ia]:
-        g[ia].append(ib)
-
-
-def dfs(root, depth):
-    global visit, g, isDAG, stack, cyclePath, maxDepth
-    stack[root] = True
-    visit[root] = True
-    if depth > maxDepth:
-        maxDepth = depth
-    for item in g[root]:
-        if not isDAG:
-            return
-        elif not visit[item]:
-            edgeTo[item] = root
-            dfs(item, depth + 1)
-        elif stack[item]:
-            isDAG = False
-            x = root
-            while (x != item):
-                cyclePath.append(x)
-                x = edgeTo[x]
-            cyclePath.append(item)
-            cyclePath.append(root)
-    stack[root] = False
-
-
-def checkDAG(len):
-    global isDAG, visit, stack, cyclePath, edgeTo, maxDepth
-    maxDepth = -1
-    isDAG = True
-    # print("start to DAG checking")
-    visit = [False for x in range(len)]
-    stack = [False for x in range(len)]
-    cyclePath = []
-    edgeTo = {}
-    for i in range(len):
-        visit = [False for x in range(len)]
-        if isDAG:
-            dfs(i, 0)
-        # print("current maxDeth is:",maxDepth)
-
-    return isDAG
-
-
-def getNodeIndex(cur):
-    global nodeIndex
-    if cur in nodeIndex.keys():
-        return nodeIndex[cur]
-    else:
-        t = len(nodeIndex)
-        nodeIndex[cur] = t
-        return t
-
-
-def clearNodeIndex():
-    global nodeIndex
-    nodeIndex = {}
-
-
-def printGraph():
-    global g
-    for i, item in enumerate(g):
-        print("[%d]: %s" % (i, item))
-
-
-def printCycle():
-    global cyclePath
-    print("CyclePath is:", cyclePath)
-
-
-def isRestricted(GenCode, actList, proList, numList):
+def isRestricted(GenCode, actionList, proList, numList):
     if type(GenCode) == list:  # list type
         for program in GenCode:
-            if isRestricted(program, actList, proList, numList) == False:
+            if isRestricted(program, actionList, proList, numList) == False:
                 return False
         return True
 
     elif type(GenCode) == Program:  # one program
         # no choice
         if GenCode.flag == 'IF':
-            return isRestricted(GenCode.actionList, actList, proList, numList)
+            return isRestricted(GenCode.actionList, actionList, proList, numList)
         if GenCode.flag == 'IFe':
             return True
         # action
@@ -121,14 +31,14 @@ def isRestricted(GenCode, actList, proList, numList):
         # loop
         elif GenCode.flag == 'Loop':
             # need modify to Pseudo primitive program
-            if isPseudo(GenCode.actionList, actList, proList, numList) == False:
+            if isPseudo(GenCode.actionList, actionList, proList, numList) == False:
                 print("Loop body is not sat PP")
                 return False
 
             # 判断条件是否线性，是否-1，num是否incremental。pro是否不变，
             else:
                 preproV, postproV, prenumV, postnumV = generateZ3Variable(proList, numList, 'i', 'o')
-                subSeqAxioms, loopBodyproEff, loopBodynumEff = pseudoProgram2Logic(GenCode.actionList, actList, proList,
+                subSeqAxioms, loopBodyproEff, loopBodynumEff = pseudoProgram2Logic(GenCode.actionList, actionList, proList,
                                                                                    numList, preproV, postproV, prenumV,
                                                                                    postnumV, {}, {})
 
@@ -171,212 +81,17 @@ def isRestricted(GenCode, actList, proList, numList):
                 if flag == True:
                     # print("all c-incremental")
                     return True
-                if not checkDAG(len(numList)):
-                    # printCycle()
-                    print("cyclic")
+                if isAcyclic(numList):
+                    print("The body of loop is not acyclic")
                     return False
-                # print("DAG")
                 return True
 
     else:
         return True
 
-
-# translate conditional action to logic formulas
-def action2Logic(act, propZ3pre, propZ3post, numZ3pre, numZ3post, proList, numList, preproV, prenumV):
-    axioms = []
-    effNums = set()
-    effPros = set()
-
-    preproV = propZ3post
-    prenumV = numZ3post
-
-    for f in act.preFormu:
-        # print('====---====')
-        # print(f'{f.left} {f.op} {f.right}')
-        # print('====---====')
-        exp = ''
-        if int(f.right) == 0:
-            exp = Not(propZ3pre[f.left])
-        else:
-            exp = propZ3pre[f.left]
-
-        axioms.append(exp)
-
-    for m in act.preMetric:
-        if isinstance(m, list):
-            orAxioms = []
-            for n in m:
-                if n.op == "=":
-                    n.op = "=="
-
-                # right = ''
-                # for k, v in numZ3pre.items():
-                #     if k in n.right:
-                #         right = n.right.replace(k, "numZ3pre['" + k + "']")
-                #     else:
-                #         right = n.right
-                # exp = eval('numZ3pre[n.left]' + n.op + right)
-
-                if n.right in numList:
-                    exp = eval('numZ3pre["' + n.left + '"]' + n.op + 'numZ3pre["' + n.right + '"]')
-                else:
-                    exp = eval('numZ3pre["' + n.left + '"]' + n.op + n.right)
-                orAxioms.append(exp)
-            axioms.append(Or(orAxioms))
-
-        else:
-            if m.op == "=":
-                m.op = "=="
-
-            if m.right in numList:
-                exp = eval('numZ3pre["' + m.left + '"]' + m.op + 'numZ3pre["' + m.right + '"]')
-            else:
-                exp = eval('numZ3pre["' + m.left + '"]' + m.op + m.right)
-            axioms.append(exp)
-
-    # effect
-    for p in act.effect_pos:
-        exp = propZ3post[p]
-        effPros.add(p)
-        axioms.append(exp)
-
-    for p in act.effect_neg:
-        exp = Not(propZ3post[p])
-        effPros.add(p)
-        axioms.append(exp)
-
-    for m in act.effect_Metric:
-        effNums.add(m.left)
-        if (m.op == "increase"):
-            exp = eval('numZ3post[m.left]' + "==" + 'numZ3pre[m.left]' + "+" + m.right)
-        elif (m.op == "decrease"):
-            exp = eval('numZ3post[m.left]' + "==" + 'numZ3pre[m.left]' + "-" + m.right)
-        elif m.op == "assign":
-            right = m.right
-            for n in numList:
-                right = right.replace(n, 'numZ3pre["' + n + '"]')
-            exp = eval('numZ3post[m.left]' + "==" + right)
-        axioms.append(exp)
-
-    if len(act.subAction) != 0:
-        subaxioms, effPros, effNums = getcondEff(act, propZ3pre, propZ3post, numZ3pre, numZ3post, proList, numList,
-                                                 effPros, effNums)
-        axioms.append(subaxioms)
-
-    for p in proList:
-        if p not in effPros:
-            exp = propZ3post[p] == propZ3pre[p]
-            axioms.append(exp)
-
-    for m in numList:
-        if m not in effNums:
-            axioms.append(numZ3post[m] == numZ3pre[m])
-
-    return axioms, preproV, prenumV
-
-
-# merger conditional effect
-def getcondEff(act, propZ3pre, propZ3post, numZ3pre, numZ3post, proList, numList, effPros, effNums):
-    axioms = []
-    preAxioms = []
-    notChangeAxioms = []
-    condeffPros = set()
-    condeffNums = set()
-    for subact in act.subAction:
-        precond = []
-        effect = []
-
-        # precond
-        if len(subact.preFormu) != 0:
-            for p in subact.preFormu:
-                if int(p.right) == 0:
-                    exp = Not(propZ3pre[p.left])
-                else:
-                    exp = propZ3pre[p.left]
-                precond.append(exp)
-
-        if len(subact.preMetric) != 0:
-            for m in subact.preMetric:
-                if m.op == "=":
-                    m.op = "=="
-
-                right = ''
-                for k, v in numZ3pre.items():
-                    if k in m.right:
-                        right = m.right.replace(k, "numZ3pre['" + k + "']")
-                    else:
-                        right = m.right
-
-                exp = eval('numZ3pre[m.left]' + m.op + right)
-                precond.append(exp)
-
-        # effect
-        # propEff
-        for p in subact.effect_pos:
-            exp = propZ3post[p]
-            condeffPros.add(p)
-            effect.append(exp)
-
-        for p in subact.effect_neg:
-            exp = Not(propZ3post[p])
-            condeffPros.add(p)
-            effect.append(exp)
-
-        # numEff
-        for m in subact.effect_Metric:
-            condeffNums.add(m.left)
-            if (m.op == "increase"):
-                exp = eval('numZ3post[m.left]' + "==" + 'numZ3pre[m.left]' + "+" + m.right)
-            elif (m.op == "decrease"):
-                exp = eval('numZ3post[m.left]' + "==" + 'numZ3pre[m.left]' + "-" + m.right)
-            elif (m.op == "assign" and m.right.count('(') == 1):
-                if m.right in numZ3pre:
-                    exp = eval('numZ3post[m.left]' + "==" + 'numZ3pre[m.right]')
-                else:
-                    right = ''
-                    for k, v in numZ3pre.items():
-                        right = m.right.replace(k, 'numZ3pre["' + k + '"]')
-                    exp = eval('numZ3post[m.left]' + "==" + right)
-            effect.append(exp)
-
-        precond = And(precond)
-        effect = And(effect)
-        # print('----------------')
-        # print(effect)
-        # print('-----------------')
-        subAxiom = Implies(precond, effect)
-        preAxioms.append(precond)
-        axioms.append(subAxiom)
-
-    for p in condeffPros:
-        exp = propZ3post[p] == propZ3pre[p]
-        notChangeAxioms.append(exp)
-
-    for n in condeffNums:
-        exp = numZ3post[n] == numZ3pre[n]
-        notChangeAxioms.append(exp)
-
-    notChangePreAxiom = Not(Or(preAxioms))
-    notChangeAxiom = Implies(notChangePreAxiom, And(notChangeAxioms))
-    axioms.append(notChangeAxiom)
-
-    effPros = effPros.union(condeffPros)
-    effNums = effNums.union(condeffNums)
-
-    # print('--------')
-    # print(condeffNums)
-    # print(condeffPros)
-    # print(effPros)
-    # print(effNums)
-    # print('--------')
-
-    return axioms, effPros, effNums
-
-
 # translate restricted program to logic formula
-def restrictedProgram2Logic(program, proList, numList, root, preproV, prenumV, postproV, postnumV):
-    global iteN, actionList
+def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV, prenumV, postproV, postnumV):
+    global iteN
     axioms = []
     axiom = []
     iproV = preproV
@@ -398,7 +113,7 @@ def restrictedProgram2Logic(program, proList, numList, root, preproV, prenumV, p
 
         if program[i].flag == 'Seq':
             act = program[i].actionList[0]
-            axiomsNew, preproV, prenumV = action2Logic(actionList[act], propZ3pre, propZ3post, numZ3pre,
+            axiomsNew, preproV, prenumV = condAct2Logic(actionList[act], propZ3pre, propZ3post, numZ3pre,
                                                       numZ3post, proList, numList, preproV, prenumV)
 
             axioms += axiomsNew
@@ -758,9 +473,7 @@ def restrictedProgram2Logic(program, proList, numList, root, preproV, prenumV, p
     return axiom
 
 
-def verifyRestrictedProgram(domain, GenCode, init, goal, actList, proList, numList):
-    global actionList
-    actionList = actList
+def verifyRestrictedProgram(domain, GenCode, init, goal, actionList, proList, numList):
     root = ''
     propInitZ3, propGoalZ3, numInitZ3, numGoalZ3 = generateZ3Variable(proList, numList, 'i', 'g')
 
@@ -769,7 +482,7 @@ def verifyRestrictedProgram(domain, GenCode, init, goal, actList, proList, numLi
 
     init = And(init)
     goal = And(goal)
-    axiom = restrictedProgram2Logic(GenCode, proList, numList, root, propInitZ3, numInitZ3,propGoalZ3,numGoalZ3)
+    axiom = restrictedProgram2Logic(GenCode, actionList, proList, numList, root, propInitZ3, numInitZ3,propGoalZ3,numGoalZ3)
     states = []
     resultg = False
     resultt = False

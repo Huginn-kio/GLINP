@@ -2,14 +2,12 @@ import getopt
 import sys
 import time
 
-from complete import complete, GenCode2GenCodeWithElse, PrintProgramWithElse
-from generateinit import modifyGenerateInitialState, addInitialState
-from generateplan import generateItemPlan
-from infskeleton import infskeleton, PrintNoElseProgram
-from verifyPseudoProgram import verifyPseudoProgram, isPseudo
-from verifyRestricedProgram import isRestricted, verifyRestrictedProgram
-
-
+from generate.complete import complete, GenCode2GenCodeWithElse
+from generate.generateinit import modifyGenerateInitialState, addInitialState
+from generate.generateplan import generateItemPlan
+from generate.infskeleton import infskeleton, PrintNoElseProgram
+from verify.verifyPseudoProgram import verifyPseudoProgram, isPseudo
+from verify.verifyRestricedProgram import isRestricted, verifyRestrictedProgram
 
 # generate planning program
 def generatePlanningProgram(domain):

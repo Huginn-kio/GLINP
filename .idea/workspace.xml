@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="ICAPS version" />
+    <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="ICAPS version">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/complete.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/complete.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datastructure.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/datastructure.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/enumrate.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/enumrate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generateinit.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/generateinit.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generateplan.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/generateplan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/infskeleton.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/infskeleton.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/verifyPseudoProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyPseudoProgram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/verifyRestricedProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyRestricedProgram.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,14 +36,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/maho/Desktop&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/maho/Desktop/GLINP/verify"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/utils" />
+      <recent name="$PROJECT_DIR$/verify" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/utils" />
+      <recent name="$PROJECT_DIR$/generate" />
+      <recent name="$PROJECT_DIR$/verify" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="GLINP" />
@@ -47,7 +71,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="" />
+      <option name="PARAMETERS" value="-b 3 -n 3 -m 1 -f 2 -t 1 -d D-Return" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -67,6 +91,8 @@
       <workItem from="1704467033210" duration="377000" />
       <workItem from="1704467411189" duration="619000" />
       <workItem from="1704468463809" duration="200000" />
+      <workItem from="1704468675969" duration="180000" />
+      <workItem from="1704854300424" duration="2691000" />
     </task>
     <task id="LOCAL-00001" summary="123">
       <created>1704467098977</created>
@@ -82,7 +108,14 @@
       <option name="project" value="LOCAL" />
       <updated>1704468501526</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="ICAPS version">
+      <created>1704468746789</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1704468746789</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -103,5 +136,8 @@
     <MESSAGE value="123" />
     <MESSAGE value="ICAPS version" />
     <option name="LAST_COMMIT_MESSAGE" value="ICAPS version" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/GLINP$main.coverage" NAME="main Coverage Results" MODIFIED="1704869580452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -1,9 +1,6 @@
-import copy
-from collections import deque
-
-from datastructure import Program
+from generate.datastructure import Program
 from domain import Switch
-from util import getCoff, getLinearTermInCondition, isCremental, generateZ3Variable
+from utils.util import getCoff, getLinearTermInCondition, generateZ3Variable, uncondAct2Logic
 from z3 import *
 
 times=0
@@ -153,7 +150,7 @@ def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, p
             # print('---------1-------')
             # print(numEff)
 
-            subAxioms,proEff,numEff = pseudoAction2Logic(actList[programList[i].actionList[0]],proList,numList,proEff,numEff)
+            subAxioms,proEff,numEff = uncondAct2Logic(actList[programList[i].actionList[0]],proList,numList,proEff,numEff)
             axioms += subAxioms
             # print('+++++++++++++++++++++++++++++++')
             # print(axioms)
@@ -285,82 +282,6 @@ def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, p
         times = 0
 
     return axioms,proEff,numEff
-
-
-# translate unditional action to logic formulas
-def pseudoAction2Logic(act,proList,numList,lastproEff,lastnumEff):
-    axioms = []
-    proEff = copy.deepcopy(lastproEff)
-    numEff = copy.deepcopy(lastnumEff)
-
-    # print('--------213123------')
-    # print(lastnumEff)
-    # # print(lastproEff)
-    # print('--------2312312------')
-
-    #proPre
-    for p in act.preFormu:
-        # print('+++++++++++++++++++++++++++')
-        # print(f'{p.left} +  {p.op} + {p.right}')
-        if int(p.right) == 0:
-            exp = Not(lastproEff[p.left])
-        else:
-            exp = lastproEff[p.left]
-        axioms.append(exp)
-
-    #numPre
-    for n in act.preMetric:
-        if isinstance(n,list):
-            orAxioms = []
-            for l in n:
-                if l.op == '=':
-                    l.op = '=='
-                if l.right in numList:
-                    exp = eval('lastnumEff["' + l.left + '"]' + l.op + 'lastnumEff["' + l.right + '"]')
-                else:
-                    exp = eval('lastnumEff["' + l.left + '"]' + l.op + l.right)
-                orAxioms.append(exp)
-            axioms.append(Or(orAxioms))
-
-        else:
-            if n.op == '=':
-                n.op = '=='
-            if n.right in numList:
-                exp = eval('lastnumEff["' + n.left + '"]' + n.op + 'lastnumEff["' + n.right + '"]')
-            else:
-                exp = eval('lastnumEff["' + n.left + '"]' + n.op  + n.right )
-            axioms.append(exp)
-
-
-    #proEff
-    for pp in act.effect_pos:
-        proEff[pp] = True
-
-    for pn in act.effect_neg:
-        proEff[pn] = False
-
-    #numEff
-    for formu in act.effect_Metric:
-        # print(f'{formu.left} {formu.op} {formu.right}')
-        if formu.op == 'increase':
-            numEff[formu.left] = eval('lastnumEff["' + formu.left + '"]' + '+' + formu.right)
-        elif formu.op == 'decrease':
-            numEff[formu.left] = eval('lastnumEff["' + formu.left + '"]' + '-' + formu.right)
-        elif formu.op == 'assign':
-            right = formu.right
-            # print(right)
-            for n in numList:
-                right = right.replace(n,"lastnumEff['" + n + "']")
-            right = eval(right)
-            # print(right)
-            numEff[formu.left] = right
-
-    # print('------------numEFFF-------')
-    # print(lastnumEff)
-    # print(numEff)
-    # print('------------numEFFFF-------')
-    return axioms,proEff,numEff
-
 
 # verify pseudo primitive program
 def verifyPseudoProgram(GLINP,program,init,goal,actList,proList,numList):
