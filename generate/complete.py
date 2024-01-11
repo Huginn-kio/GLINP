@@ -1,11 +1,10 @@
 import copy
 
-from datastructure import Action, NumExpression, State
-from enumrate import Enumrate
+from generate.enumrate import Enumrate
 from parsePddl.pythonpddl import pddlDomain
 from parsePddl.pythonpddl import pddlProblem
 from parsePddl.pythonpddl.pddlDomain import Action as ActOUT
-from datastructure import Program
+from generate.datastructure import Program, Action, NumExpression, State
 
 actionList={}
 book={}

@@ -1,7 +1,7 @@
 import copy
 import difflib
 from functools import reduce
-from datastructure import Item, Program
+from generate.datastructure import Item, Program
 
 
 # map the letter (cd)* to the ABC...

@@ -6,6 +6,7 @@ from generate.complete import complete, GenCode2GenCodeWithElse
 from generate.generateinit import modifyGenerateInitialState, addInitialState
 from generate.generateplan import generateItemPlan
 from generate.infskeleton import infskeleton, PrintNoElseProgram
+from verify.verifyNewDecFrg1 import isProgram1, verifyProgram1
 from verify.verifyPseudoProgram import verifyPseudoProgram, isPseudo
 from verify.verifyRestricedProgram import isRestricted, verifyRestrictedProgram
 
@@ -88,9 +89,10 @@ def verifyPlanningProgram(domain,GenCode,init,goal,actionList,proList,numList):
   print("The Correctness Verification of Program as follow:")
   if frag == 1:
       return verifyPseudoProgram(domain, GenCode, init, goal, actionList, proList, numList)
-  else:
+  elif frag == 2:
       return verifyRestrictedProgram(domain, GenCode, init, goal, actionList, proList, numList)
-
+  elif frag == 3:
+      return verifyProgram1(domain, GenCode, init, goal, actionList, proList, numList)
 
 
 
@@ -232,36 +234,42 @@ def NonIterativeVerifyPlanningProgram(domain):
     GenCode, actionList, proList, numList = generatePlanningProgram(domain)
     print("\n------------------------------------------------------")
 
+    sat = True
     if frag == 1:
         print("---------------------PP or Not----------------")
         print("------------------------------------------------------\n")
         if isPseudo(GenCode, actionList, proList, numList) == True:
             print('The program is PP.')
-            print()
-
-            # verify pp planning program
-            e1 = time.time()
-            verifyPlanningProgram(domain, GenCode, '', '', actionList, proList, numList)
-            e2 = time.time()
-            print()
-            print('Verification Time: %fs' % (e2 - e1))
         else:
             print('The program is not PP.')
-    else:
+            sat = False
+
+    elif frag == 2:
         print("---------------------Restricted or Not----------------")
         print("------------------------------------------------------\n")
         if isRestricted(GenCode, actionList, proList, numList) == True:
             print('The program is Restricted.')
-            print()
+        else:
+            print('The program is not Restricted.')
+            sat = False
 
+    elif frag == 3:
+        print("---------------------program1 or Not----------------")
+        print("------------------------------------------------------\n")
+        if isProgram1(GenCode, actionList, proList, numList) == True:
+            print('The program is program1.')
+        else:
+            print('The program is not program1.')
+            sat = False
+
+    if sat is True:
             # verify restricted planning program
+            print()
             e1 = time.time()
             verifyPlanningProgram(domain, GenCode, '', '', actionList, proList, numList)
             e2 = time.time()
             print()
             print('Verification Time: %fs' % (e2 - e1))
-        else:
-            print('The program is not Restricted.')
 
     print()
     print("#######################################################")
@@ -287,9 +295,6 @@ test=1
 left=''
 right=''
 
-
-
-
 if __name__ == "__main__":
     try:
         options, args = getopt.getopt(sys.argv[1:], "d:b:n:m:f:t:", ["domain", "bound", "number","model","fragment","test"])
@@ -307,7 +312,7 @@ if __name__ == "__main__":
                     sys.exit()
             if option in ("-f", "--frag"):
                 frag = int(value)
-                if frag != 1 and frag != 2:
+                if frag != 1 and frag != 2 and frag != 3:
                     print('invalid fragment. Please input 1 or 2.')
                     sys.exit()
             if option in ("-t", "--test"):

@@ -1,8 +1,8 @@
 import os
 import sys
 
-from datastructure import Item
-from generateinit import parseDomain
+from generate.datastructure import Item
+from generate.generateinit import parseDomain
 
 def generateSequencePlans(domain,probfileSet):
     """
@@ -16,7 +16,7 @@ def generateSequencePlans(domain,probfileSet):
     domainfile = './domain/' + domain + '/domain.pddl'
     plans = []
     for problemfile in probfileSet:
-        output = os.popen("./ff -o " + domainfile + " -f " + problemfile)
+        output = os.popen("./generate/ff -o " + domainfile + " -f " + problemfile)
         mid = output.read().strip()
         res = mid.split("\n")
         k = len(res)

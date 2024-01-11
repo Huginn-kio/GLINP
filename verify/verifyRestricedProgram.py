@@ -1,10 +1,6 @@
-import re
-
 from generate.datastructure import Program
-from domain import Switch
-from utils.util import isCremental, generateZ3Variable, is2DArray, getNodeIndex, addEdge, clearNodeIndex, \
-    initGraph, isAcyclic, condAct2Logic
-from verifyPseudoProgram import pseudoProgram2Logic, isPseudo
+from utils.util import isCremental, generateZ3Variable, is2DArray, isAcyclic, condAct2Logic, verifyTEAndG, getVariableFromFormula
+from verify.verifyPseudoProgram import pseudoProgram2Logic, isPseudo
 from z3 import *
 
 # translate a retricted planning program
@@ -14,7 +10,7 @@ iteN = 0
 def isRestricted(GenCode, actionList, proList, numList):
     if type(GenCode) == list:  # list type
         for program in GenCode:
-            if isRestricted(program, actionList, proList, numList) == False:
+            if not isRestricted(program, actionList, proList, numList):
                 return False
         return True
 
@@ -31,7 +27,7 @@ def isRestricted(GenCode, actionList, proList, numList):
         # loop
         elif GenCode.flag == 'Loop':
             # need modify to Pseudo primitive program
-            if isPseudo(GenCode.actionList, actionList, proList, numList) == False:
+            if not isPseudo(GenCode.actionList, actionList, proList, numList) :
                 print("Loop body is not sat PP")
                 return False
 
@@ -40,48 +36,39 @@ def isRestricted(GenCode, actionList, proList, numList):
                 preproV, postproV, prenumV, postnumV = generateZ3Variable(proList, numList, 'i', 'o')
                 subSeqAxioms, loopBodyproEff, loopBodynumEff = pseudoProgram2Logic(GenCode.actionList, actionList, proList,
                                                                                    numList, preproV, postproV, prenumV,
-                                                                                   postnumV, {}, {})
+                                                                                   postnumV)
 
                 # check whether props are simple
                 for k, v in loopBodyproEff.items():
                     if not (v == True or v == False or simplify(v == preproV[k])):
-                        print("Loop body prop is not simple")
+                        print("Loop body prop " + k + " is not simple")
                         return False
 
                 # 获得循环体的num变量变化
                 cIncNUm = []
-                varList = []
                 loopEff = {}
-                clearNodeIndex()
-                initGraph(len(numList))
                 flag = True
                 for n in numList:
                     loopEff[n] = simplify(loopBodynumEff[n] - prenumV[n])
                     cur = prenumV[n].__repr__()
-                    ia = getNodeIndex(cur)
                     if is_int_value(loopEff[n]) == True:
                         # print("c-incremental:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
                         cIncNUm.append(prenumV[n].__repr__())
                     else:
                         # linear by contain it self
                         # print("linear:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
-                        varList = re.findall(r"(\([\d\w]*\)[io]?)", loopBodynumEff[n].__repr__())
+                        varList = getVariableFromFormula(loopBodynumEff[n]);
                         # print(varList)
                         if cur in varList:
-                            print("Contain itself, not sat c-incremental or linear")
+                            print("constant symbol " + cur + " (" + loopBodynumEff[n] + ")" +
+                                  " not sat c-incremental or linear")
                             return False
                         flag = False
-                        for item in varList:
-                            ib = getNodeIndex(item)
-                            addEdge(ia, ib)
-                            # print("add edge %d %s -> %d %s" %(ia,cur,ib,item))
-                # print("Graph is following:")
-                # printGraph()
-                # print("#################")
-                if flag == True:
+
+                if flag :
                     # print("all c-incremental")
                     return True
-                if isAcyclic(numList):
+                if not isAcyclic(numList,loopBodynumEff,prenumV):
                     print("The body of loop is not acyclic")
                     return False
                 return True
@@ -207,7 +194,7 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
             else:
                 # obtain the axioms and effects of body
                 subLBaxioms, proEff, numEff = pseudoProgram2Logic(program[i].actionList, actionList, proList, numList,
-                                                                  propZ3pre, propZ3post, numZ3pre, numZ3post, {}, {})
+                                                                  propZ3pre, propZ3post, numZ3pre, numZ3post)
 
                 # print('----------1-------------')
                 # print(subLBaxioms)
@@ -220,12 +207,10 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
                 T = Int('N' + str(iteN))
                 iteN += 1
 
-                # not satisfy condition N=0
-                # N > 0 and k = 0
+                # not satisfy condition N=0 or N > 0 and k = 0
                 # N > 0 and K > 0 satisfied
                 # N > 0 and k > 0 unsatisfied
                 cond0 = program[i].strcondition
-                cond1 = program[i].strcondition
                 condt = program[i].strcondition
                 condT = program[i].strcondition
 
@@ -240,7 +225,7 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
                 for m in numList:
                     temp = simplify(numEff[m] - numZ3pre[m])
                     # c-incremental
-                    if isCremental(temp, numZ3pre[m]) == True:
+                    if isCremental(temp, numZ3pre[m]) :
                         kloopEff[m] = simplify(numZ3pre[m] + (t * temp))
                         k_1loopEff[m] = simplify(numZ3pre[m] + (t - 1) * temp)
                     # assignment
@@ -275,24 +260,20 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
                 # print('########################')
 
                 # 循环条件的变量替换
-                # not satisfy condition N=0
-                # N > 0 and k = 0
+                # not satisfy condition N=0 or N > 0 and k = 0
                 # N > 0 and K > 0 satisfied
                 # N > 0 and k > 0 unsatisfied
                 for p in proList:
                     cond0 = cond0.replace(p, 'propZ3pre["' + p + '"]')
-                    cond1 = cond1.replace(p, 'propZ3pre["' + p + '"]')
                     condt = condt.replace(p, 'proEff["' + p + '"]')
                     condT = condT.replace(p, 'proEff["' + p + '"]')
 
                 for n in numList:
                     cond0 = cond0.replace(n, 'numZ3pre["' + n + '"]')
-                    cond1 = cond1.replace(n, 'numZ3pre["' + n + '"]')
                     condt = condt.replace(n, 'kloopEff["' + n + '"]')
                     condT = condT.replace(n, 'nloopEff["' + n + '"]')
 
                 cond0 = eval(cond0)
-                cond1 = eval(cond1)
                 condt = eval(condt)
                 condT = eval(condT)
 
@@ -312,7 +293,6 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
                 #     condT = simplify(condT)
                 #
                 # cond0 = simplify(cond0)
-                # cond1 = simplify(cond1)
 
                 # print('---------------')
                 # print(subLBaxioms)
@@ -363,7 +343,7 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
 
                 # N > 0
                 # N > 0 and K = 0
-                LBAxiomEuqOne = And(t == 0, cond1, subLBaxiomOne)
+                LBAxiomEuqOne = And(t == 0, cond0, subLBaxiomOne)
 
                 # N > 0 and K > 0
                 LBAxiomOverOne = And(t > 0, condt, simplify(subLBaxiom))
@@ -476,126 +456,5 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
 def verifyRestrictedProgram(domain, GenCode, init, goal, actionList, proList, numList):
     root = ''
     propInitZ3, propGoalZ3, numInitZ3, numGoalZ3 = generateZ3Variable(proList, numList, 'i', 'g')
-
-    if init == '' or goal == '':
-        init, goal = Switch.get(domain)(propInitZ3, propGoalZ3, numInitZ3, numGoalZ3)
-
-    init = And(init)
-    goal = And(goal)
-    axiom = restrictedProgram2Logic(GenCode, actionList, proList, numList, root, propInitZ3, numInitZ3,propGoalZ3,numGoalZ3)
-    states = []
-    resultg = False
-    resultt = False
-
-    #
-    print("------------------------------------------------------")
-    print("---------------------trace axioms---------------------")
-    print("------------------------------------------------------")
-    print(axiom)
-
-
-    # return False, states, states, states
-
-    # print()
-    # print("------------------------------------------------------")
-    # print("-------------the result of verification---------------")
-    # print("------------------------------------------------------")
-    # print(f'init:  {init}')
-    # print(f'goal:  {goal}')
-    # print(f'axiom:  {axiom}')
-
-
-    gaolAch = Not(Implies(And(axiom, init), goal))
-
-    for p in propGoalZ3.values():
-        axiom = Exists(p, axiom)
-    for m in numGoalZ3.values():
-        axiom = Exists(m, axiom)
-
-    temAndExe = Not(Implies(init, axiom))
-
-    # print(f'goalAch:  {gaolAch}')
-    # print(f'teminate: {teminate}')
-
-    print()
-
-    # goalachevability
-    sgoal = Solver()
-    sgoal.add(gaolAch)
-    if sgoal.check() == sat:
-        # not achevable
-        m = sgoal.model()
-        # counter={}
-        # for p in proList:
-        #     counter[p]=m[eval(p[1:-1])]
-        # for n in numList:
-        #     print(n[1:-1])
-        #     counter[n]=m[eval(n[1:-1])].as_long()
-        print("Goal reachable Failed proven!!!!")
-        print("The counter Example:")
-        print(m)
-        stateg = {}
-        for n in m:
-            for k1, v2 in propInitZ3.items():
-                if str(n) == str(k1) + 'i':
-                    stateg[k1] = m[n]
-            for k2, v2 in numInitZ3.items():
-                if str(n) == str(k2) + 'i':
-                    stateg[k2] = m[n]
-
-        states.append(stateg)
-
-    else:
-        resultg = True
-        print("Goal reachable successful proven!!!!")
-    sgoal.reset()
-
-    print()
-
-    # termination and executability
-
-    terminateTest = []
-
-    sterminate = Solver()
-    sterminate.add(temAndExe)
-    if sterminate.check() == sat:
-        # not
-        m = sterminate.model()
-        # counter = {}
-        # for p in proList:
-        #     counter[p] = m[preproV[p]]
-        # for n in numList:
-        #     counter[n] = m[prenumV[n]].as_long()
-        print("Termination and Executability Failed proven!!!!")
-        print("The counter Example:")
-        print(m)
-        statet = {}
-        # for n in m:
-        #     if n in propInitZ3.values() or n in numInitZ3.values():
-        #         terminateTest.append(n == m[n])
-
-        for n in m:
-            for k1, v2 in propInitZ3.items():
-                if str(n) == k1 + 'i':
-                    statet[k1] = m[n]
-            # if str(n)[0:-1] not in propInitZ3.keys():
-            #         statet[str(n)[0:-1]] = False;
-
-            for k2, v2 in numInitZ3.items():
-                if str(n) == k2 + 'i':
-                    statet[k2] = m[n]
-
-        states.append(statet)
-
-    else:
-        resultt = True
-        print("Termination and Executability successful proven!!!!")
-    sterminate.reset()
-
-    # print('------------------states----------')
-    # print(states)
-    # print('------------------states----------')
-    if resultg == True and resultt == True:
-        return True, states
-    else:
-        return False, states
+    axiom = restrictedProgram2Logic(GenCode, actionList, proList, numList, root, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3)
+    return verifyTEAndG(domain, init, goal, axiom, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3)

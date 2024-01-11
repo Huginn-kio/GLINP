@@ -1,28 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="ICAPS version">
+    <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="improve structure of project">
+      <change afterPath="$PROJECT_DIR$/verify/verifyNewDecFrg1.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/verify/verifyNewDecFrg2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/complete.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/complete.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datastructure.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/datastructure.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/enumrate.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/enumrate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generateinit.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/generateinit.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generateplan.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/generateplan.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/infskeleton.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/generate/infskeleton.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generate/complete.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate/complete.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generate/generateplan.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate/generateplan.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generate/infskeleton.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate/infskeleton.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/util.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/verifyPseudoProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyPseudoProgram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/verifyRestricedProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyRestricedProgram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/verify/verifyPseudoProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyPseudoProgram.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/verify/verifyRestricedProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyRestricedProgram.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="2024.01.09.chen" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -41,13 +47,14 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/home/maho/Desktop/GLINP/verify"
+    "last_opened_file_path": "/home/maho/Desktop/GLINP/verify",
+    "nodejs_package_manager_path": "npm"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/utils" />
       <recent name="$PROJECT_DIR$/verify" />
+      <recent name="$PROJECT_DIR$/utils" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/utils" />
@@ -56,7 +63,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.main">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="GLINP" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -71,7 +78,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="-b 3 -n 3 -m 1 -f 2 -t 1 -d D-Return" />
+      <option name="PARAMETERS" value="-b 3 -n 3 -m 1 -f 3 -d Arith" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -79,6 +86,37 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="verifyRestricedProgram" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="GLINP" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/verify" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/verify/verifyRestricedProgram.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.verifyRestricedProgram" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.verifyRestricedProgram" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -92,7 +130,8 @@
       <workItem from="1704467411189" duration="619000" />
       <workItem from="1704468463809" duration="200000" />
       <workItem from="1704468675969" duration="180000" />
-      <workItem from="1704854300424" duration="2691000" />
+      <workItem from="1704854300424" duration="16162000" />
+      <workItem from="1704935839951" duration="23026000" />
     </task>
     <task id="LOCAL-00001" summary="123">
       <created>1704467098977</created>
@@ -115,7 +154,14 @@
       <option name="project" value="LOCAL" />
       <updated>1704468746789</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="improve structure of project">
+      <created>1704870481607</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1704870481607</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -135,9 +181,39 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="123" />
     <MESSAGE value="ICAPS version" />
-    <option name="LAST_COMMIT_MESSAGE" value="ICAPS version" />
+    <MESSAGE value="improve structure of project" />
+    <option name="LAST_COMMIT_MESSAGE" value="improve structure of project" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/verify/verifyRestricedProgram.py</url>
+          <line>196</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/verify/verifyRestricedProgram.py</url>
+          <line>306</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/verify/verifyRestricedProgram.py</url>
+          <line>71</line>
+          <option name="timeStamp" value="47" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/GLINP$main.coverage" NAME="main Coverage Results" MODIFIED="1704869580452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/GLINP$main.coverage" NAME="main Coverage Results" MODIFIED="1704979294066" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/GLINP$verifyRestricedProgram.coverage" NAME="verifyRestricedProgram Coverage Results" MODIFIED="1704894289274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/verify" />
   </component>
 </project>

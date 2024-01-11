@@ -1,5 +1,8 @@
+import re
 from collections import deque
 from z3 import *
+from verify.domain import Switch
+
 # some common methods
 
 def generateZ3Variable(proList, numList, pre, post):
@@ -21,6 +24,9 @@ def isCremental(exp,num):
         return True
     else:
         return False
+
+def getVariableFromFormula(formula):
+    return re.findall(r"(\([\d\w]*\)[io]?)", formula.__repr__())
 
 def getCoff(var, condition):
     # global strList
@@ -194,8 +200,6 @@ def is2DArray(a):
 
 
 #check whether program is acyclic
-def isAcyclic(numlist):
-    return checkDAG(len(numlist));
 
 nodeIndex = {}
 visit = []
@@ -205,6 +209,24 @@ edgeTo = {}
 g = []
 maxDepth = 0
 isDAG = True
+
+def isAcyclic(numList, loopBodynumEff, prenumV):
+    clearNodeIndex()
+    initGraph(len(numList))
+    for n in numList:
+        cur = prenumV[n].__repr__()
+        eff = loopBodynumEff[n] - prenumV[n]
+        ia = getNodeIndex(cur)
+        if not is_int_value(eff) :
+            varList = getVariableFromFormula(loopBodynumEff[n]);
+            for item in varList:
+                ib = getNodeIndex(item)
+                addEdge(ia, ib)
+                # print("add edge %d %s -> %d %s" %(ia,cur,ib,item))
+    print("Graph is following:")
+    printGraph()
+    print("#################")
+    return checkDAG(len(numList));
 
 def initGraph(len):
     global g
@@ -251,8 +273,7 @@ def checkDAG(len):
         visit = [False for x in range(len)]
         if isDAG:
             dfs(i, 0)
-        # print("current maxDeth is:",maxDepth)
-
+        print("current maxDeth is:",maxDepth)
     return isDAG
 
 
@@ -356,7 +377,7 @@ def uncondAct2Logic(act,proList,numList,lastproEff,lastnumEff):
     return axioms,proEff,numEff
 
 # conditional action to logic formulas
-def condAct2Logic(act, propZ3pre, propZ3post, numZ3pre, numZ3post, proList, numList, preproV, prenumV):
+def condAct2Logic(act, propZ3pre, propZ3post, numZ3pre, numZ3post, proList, numList):
     axioms = []
     effNums = set()
     effPros = set()
@@ -544,3 +565,123 @@ def getcondEff(act, propZ3pre, propZ3post, numZ3pre, numZ3post, proList, numList
     # print('--------')
 
     return axioms, effPros, effNums
+
+#verify goal-achievability and teminating and executability properties
+def verifyTEAndG(domain, init, goal, axiom, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3):
+    states = []
+    resultg = False
+    resultt = False
+
+    if init == '' or goal == '':
+        init, goal = Switch.get(domain)(propInitZ3, propGoalZ3, numInitZ3, numGoalZ3)
+
+    init = And(init)
+    goal = And(goal)
+    #
+    print("------------------------------------------------------")
+    print("---------------------trace axioms---------------------")
+    print("------------------------------------------------------")
+    print(axiom)
+
+    # print()
+    # print("------------------------------------------------------")
+    # print("-------------the result of verification---------------")
+    # print("------------------------------------------------------")
+    # print(f'init:  {init}')
+    # print(f'goal:  {goal}')
+    # print(f'axiom:  {axiom}')
+
+    gaolAch = Not(Implies(And(axiom, init), goal))
+
+    for p in propGoalZ3.values():
+        axiom = Exists(p, axiom)
+    for m in numGoalZ3.values():
+        axiom = Exists(m, axiom)
+
+    temAndExe = Not(Implies(init, axiom))
+
+    # print(f'goalAch:  {gaolAch}')
+    # print(f'teminate: {teminate}')
+
+    print()
+
+    # goalachevability
+    sgoal = Solver()
+    sgoal.add(gaolAch)
+    if sgoal.check() == sat:
+        # not achevable
+        m = sgoal.model()
+        # counter={}
+        # for p in proList:
+        #     counter[p]=m[eval(p[1:-1])]
+        # for n in numList:
+        #     print(n[1:-1])
+        #     counter[n]=m[eval(n[1:-1])].as_long()
+        print("Goal reachable Failed proven!!!!")
+        print("The counter Example:")
+        print(m)
+        stateg = {}
+        for n in m:
+            for k1, v2 in propInitZ3.items():
+                if str(n) == str(k1) + 'i':
+                    stateg[k1] = m[n]
+            for k2, v2 in numInitZ3.items():
+                if str(n) == str(k2) + 'i':
+                    stateg[k2] = m[n]
+
+        states.append(stateg)
+
+    else:
+        resultg = True
+        print("Goal reachable successful proven!!!!")
+    sgoal.reset()
+
+    print()
+
+    # termination and executability
+
+    terminateTest = []
+
+    sterminate = Solver()
+    sterminate.add(temAndExe)
+    if sterminate.check() == sat:
+        # not
+        m = sterminate.model()
+        # counter = {}
+        # for p in proList:
+        #     counter[p] = m[preproV[p]]
+        # for n in numList:
+        #     counter[n] = m[prenumV[n]].as_long()
+        print("Termination and Executability Failed proven!!!!")
+        print("The counter Example:")
+        print(m)
+        statet = {}
+        # for n in m:
+        #     if n in propInitZ3.values() or n in numInitZ3.values():
+        #         terminateTest.append(n == m[n])
+
+        for n in m:
+            for k1, v2 in propInitZ3.items():
+                if str(n) == k1 + 'i':
+                    statet[k1] = m[n]
+            # if str(n)[0:-1] not in propInitZ3.keys():
+            #         statet[str(n)[0:-1]] = False;
+
+            for k2, v2 in numInitZ3.items():
+                if str(n) == k2 + 'i':
+                    statet[k2] = m[n]
+
+        states.append(statet)
+
+    else:
+        resultt = True
+        print("Termination and Executability successful proven!!!!")
+    sterminate.reset()
+
+    # print('------------------states----------')
+    # print(states)
+    # print('------------------states----------')
+    if resultg == True and resultt == True:
+        return True, states
+    else:
+        return False, states

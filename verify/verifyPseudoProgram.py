@@ -1,15 +1,15 @@
 from generate.datastructure import Program
-from domain import Switch
+from verify.domain import Switch
 from utils.util import getCoff, getLinearTermInCondition, generateZ3Variable, uncondAct2Logic
 from z3 import *
 
 times=0
 
 # check whether program is a pseudo primitive program
-def isPseudo(GenCode, actList, proList, numList):
+def isPseudo(GenCode, actionList, proList, numList):
     if type(GenCode) == list:  # list type
         for program in GenCode:
-            if isPseudo(program, actList, proList, numList) == False:
+            if isPseudo(program, actionList, proList, numList) == False:
                 return False
         return True
 
@@ -21,7 +21,7 @@ def isPseudo(GenCode, actList, proList, numList):
 
         # action
         elif GenCode.flag == 'Seq':  # action seq
-            act = actList[GenCode.actionList[0]]
+            act = actionList[GenCode.actionList[0]]
             if len(act.subAction) != 0:
                 # print("PP contains conditional effect")
                 return False
@@ -31,7 +31,7 @@ def isPseudo(GenCode, actList, proList, numList):
         # loop
         elif GenCode.flag == 'Loop':
 
-            if isPseudo(GenCode.actionList, actList, proList, numList) == False:  # check the loop body
+            if isPseudo(GenCode.actionList, actionList, proList, numList) == False:  # check the loop body
                 return False
 
                 # 排除一部分非线性while条件
@@ -49,9 +49,9 @@ def isPseudo(GenCode, actList, proList, numList):
             # 判断条件是否线性，是否-1，num是否incremental。pro是否不变，
             else:
                 preproV, postproV, prenumV, postnumV = generateZ3Variable(proList, numList, 'i', 'o')
-                subSeqAxioms, loopBodyproEff, loopBodynumEff = pseudoProgram2Logic(GenCode.actionList, actList,proList, numList,
+                subSeqAxioms, loopBodyproEff, loopBodynumEff = pseudoProgram2Logic(GenCode.actionList, actionList,proList, numList,
                                                                                    preproV, postproV, prenumV, postnumV,
-                                                                                   {}, {})
+                                                                                   )
                 loopEff = {}
 
                 # check static prop
@@ -60,7 +60,7 @@ def isPseudo(GenCode, actList, proList, numList):
                         # print("Loop body prop %s is not static" %k)
                         return False
 
-                condition = GenCode.strcondition  # fix bug 1, Momo007
+                condition = GenCode.strcondition
 
                 for p in proList:
                     if p in condition:
@@ -87,7 +87,7 @@ def isPseudo(GenCode, actList, proList, numList):
                             effInloop[n] = loopEff[n]
 
                 if len(effInloop) != 1:
-                    # print("Loop body more than one Cw in condition")
+                    # print("Loop body more than one w in condition")
                     return False
 
 
@@ -95,8 +95,8 @@ def isPseudo(GenCode, actList, proList, numList):
 
                 # print('-----------------------')
                 # print(condition)
-                for n in numIncond:
-                    co = getCoff(n, condition)
+                # for n in numIncond:
+                #     co = getCoff(n, condition)
                 #     print(f'{n}:  {co}')
                 # print('----------------------')
 
@@ -114,21 +114,20 @@ def isPseudo(GenCode, actList, proList, numList):
 
 
 # translate pseudo primitive program to logic formulas
-def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, prenumV, postnumV,proEff,numEff):
+def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, prenumV, postnumV):
     global times
-    flag = 0
     axioms = []
 
-    #第一次进入
-    if times == 0:
-        flag = 1
-        for p in proList:
-            proEff[p] = preproV[p]
-
-        for n in numList:
-            numEff[n] = prenumV[n]
-
     times += 1
+
+    proEff = {}
+    numEff = {}
+
+    for p in proList:
+        proEff[p] = preproV[p]
+
+    for n in numList:
+        numEff[n] = prenumV[n]
 
     # print('---------------------------------------------')
     # print(preproV)
@@ -163,15 +162,7 @@ def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, p
         if programList[i].flag == 'Loop':
             # loop statement ——> logic formula
 
-            proTempEff = {}
-            numTempEff = {}
-            for p in proList:
-                proTempEff[p] = preproV[p]
-
-            for n in numList:
-                numTempEff[n] = prenumV[n]
-
-            subSeqAxioms,loopBodyproEff,loopBodynumEff = pseudoProgram2Logic(programList[i].actionList,actList,proList,numList,preproV, postproV, prenumV, postnumV, proTempEff,numTempEff)
+            subSeqAxioms,loopBodyproEff,loopBodynumEff = pseudoProgram2Logic(programList[i].actionList,actList,proList,numList,preproV, postproV, prenumV, postnumV)
 
             # print('coooocoocococococoooc')
             # print(subSeqAxioms)
@@ -271,7 +262,7 @@ def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, p
             # print(numEff)
             # print('--------------numefff-------------')
 
-    if flag == 1:
+    if times == 1:
         #程序最顶层
         for p in proList:
             axioms.append(simplify(postproV[p] == proEff[p]))
@@ -279,7 +270,7 @@ def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, p
         for n in numList:
             axioms.append(simplify(postnumV[n] == numEff[n]))
 
-        times = 0
+    times -= 1
 
     return axioms,proEff,numEff
 
@@ -290,7 +281,7 @@ def verifyPseudoProgram(GLINP,program,init,goal,actList,proList,numList):
     init, goal = Switch.get(GLINP)(preproV, postproV, prenumV, postnumV)
     init = And(init)
     goal = And(goal)
-    axiom,proEff,numEff = pseudoProgram2Logic(program,actList,proList,numList,preproV, postproV, prenumV, postnumV,{},{})
+    axiom,proEff,numEff = pseudoProgram2Logic(program,actList,proList,numList,preproV, postproV, prenumV, postnumV)
     # print(axiom)
     axiom = simplify(And(axiom))
     s = Solver()
