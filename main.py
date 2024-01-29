@@ -3,6 +3,7 @@ import sys
 import time
 
 from generate.complete import complete, GenCode2GenCodeWithElse, getInitState, getInitialStateSet
+from generate.complete2 import complete2
 from generate.generateinit import modifyGenerateInitialState, addInitialState
 from generate.generateplan import generateItemPlan
 from generate.infskeleton import infskeleton, PrintNoElseProgram
@@ -78,11 +79,12 @@ def generatePlanningProgram(domain,  probfileSet):
 
     domainfile = './domain/' + domain + '/domain.pddl'
 
-    GenCode,actionList,proList,numList = complete(GenProgram,domainfile,probfileSet,plans)
+    #GenCode,actionList,proList,numList = complete(GenProgram,domainfile,probfileSet,plans)
+    GenCode,actionList,proList,numList = complete2(GenProgram,domainfile,probfileSet,plans)
 
     print("\n1. The generated Planning Program as follow:")
-    # PrintNoElseProgram(GenCode, 0, 0)
-    # print("\n2. The simplified Planning Program as follow:")
+    PrintNoElseProgram(GenCode, 0, 0)
+    print("\n2. The simplified Planning Program as follow:")
     simplifyGenCode(GenCode)
     PrintNoElseProgram(GenCode, 0, 0)
     # G1 = GenCode2GenCodeWithElse(GenCode)
@@ -240,9 +242,9 @@ def iterativeGenerateAndTest(domain):
 
         else:
             if counterexamples != 0:
-                j = 0
-                for s in counterexamples:
-                    if s in initset:
+                j = 1
+                for s in initset:
+                    if s in counterexamples:
                         print('errer, counterexample exists in the initSet')
                         print('initSet:')
                         printInitStates(initset)

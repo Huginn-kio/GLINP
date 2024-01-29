@@ -330,7 +330,7 @@ def generate_init_states(modelSort,stateSize,bound,init_upred_list,init_dpred_li
     # for Arith init has no n
     elif modelSort == 2:
         for var in init_uvar_list:
-            s.add(eval(f"{var}>=0"))
+            s.add(eval(f"{var}>0"))
     inits_text = []
     # to avoid the same state and generate different init states
     notEqualList = []

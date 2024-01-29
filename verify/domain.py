@@ -16,15 +16,15 @@ def ClearBlock(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     return Init, goal
 
 def Corner_A(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    Init = [numInitZ3['(disr)'] >= 0, numInitZ3['(disl)'] >= 0, numInitZ3['(dist)'] >= 0, numInitZ3['(disb)'] >= 0]
+    Init = [numInitZ3['(disr)'] > 0, numInitZ3['(disl)'] > 0, numInitZ3['(dist)'] > 0, numInitZ3['(disb)'] > 0]
     goal = [numGoalZ3['(disr)'] == 0, numGoalZ3['(dist)'] == 0]
     return Init, goal
 
 
 def Corner_R(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [propInitZ3['(dectr)'] == True, propInitZ3['(dectl)'] == False, propInitZ3['(dectt)'] == False,
-            propInitZ3['(dectb)'] == False, numInitZ3['(disr)'] >= 0, numInitZ3['(disl)'] >= 0, numInitZ3['(dist)'] >= 0,
-            numInitZ3['(disb)'] >= 0]
+            propInitZ3['(dectb)'] == False, numInitZ3['(disr)'] > 0, numInitZ3['(disl)'] > 0, numInitZ3['(dist)'] > 0,
+            numInitZ3['(disb)'] > 0]
     goal = [numGoalZ3['(disr)'] == 0,  numGoalZ3['(dist)'] == 0]
     return Init, goal
 
@@ -35,8 +35,8 @@ def Delivery(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
 
 def D_Return(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [propInitZ3['(visitlt)'] == False, propInitZ3['(visitrt)'] == False,
-            propInitZ3['(visitrb)'] == False, numInitZ3['(disr)'] >= 0, numInitZ3['(disl)'] >= 0,
-            numInitZ3['(dist)'] >= 0, numInitZ3['(disb)'] >= 0, numInitZ3['(startl)'] == numInitZ3['(disl)'],
+            propInitZ3['(visitrb)'] == False, numInitZ3['(disr)'] > 0, numInitZ3['(disl)'] > 0,
+            numInitZ3['(dist)'] > 0, numInitZ3['(disb)'] > 0, numInitZ3['(startl)'] == numInitZ3['(disl)'],
             numInitZ3['(startt)'] == numInitZ3['(dist)']]
     goal = [numGoalZ3['(disl)'] == numGoalZ3['(startl)'], numGoalZ3['(dist)'] == numGoalZ3['(startt)'],
             propGoalZ3['(visitlt)'] == True, propGoalZ3['(visitrt)'] == True, propGoalZ3['(visitrb)'] == True]
@@ -46,8 +46,8 @@ def D_Return(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
 def D_Return_R(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [propInitZ3['(visitlt)'] == False, propInitZ3['(visitrt)'] == False,
             propInitZ3['(visitrb)'] == False, propInitZ3['(dectr)'] == False, propInitZ3['(dectl)'] == True,
-            propInitZ3['(dectt)'] == False, propInitZ3['(dectb)'] == False, numInitZ3['(disr)'] >= 0,
-            numInitZ3['(disl)'] >= 0, numInitZ3['(dist)'] >= 0, numInitZ3['(disb)'] >= 0,
+            propInitZ3['(dectt)'] == False, propInitZ3['(dectb)'] == False, numInitZ3['(disr)'] > 0,
+            numInitZ3['(disl)'] > 0, numInitZ3['(dist)'] > 0, numInitZ3['(disb)'] > 0,
             numInitZ3['(startl)'] == numInitZ3['(disl)'], numInitZ3['(startt)'] == numInitZ3['(dist)']]
     goal = [numGoalZ3['(disl)'] == numGoalZ3['(startl)'], numGoalZ3['(dist)'] == numGoalZ3['(startt)'],
             propGoalZ3['(visitlt)'] == True, propGoalZ3['(visitrt)'] == True, propGoalZ3['(visitrb)'] == True]
@@ -61,8 +61,8 @@ def Gripper(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
 
 def Hall_A(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [propInitZ3['(visitlt)'] == False, propInitZ3['(visitrt)'] == False, propInitZ3['(visitlb)'] == False,
-            propInitZ3['(visitrb)'] == False, numInitZ3['(disr)'] == 0, numInitZ3['(disl)'] >= 0,
-            numInitZ3['(dist)'] >= 0, numInitZ3['(disb)'] >= 0, numInitZ3['(startl)'] == numInitZ3['(disl)'],
+            propInitZ3['(visitrb)'] == False, numInitZ3['(disr)'] == 0, numInitZ3['(disl)'] > 0,
+            numInitZ3['(dist)'] > 0, numInitZ3['(disb)'] > 0, numInitZ3['(startl)'] == numInitZ3['(disl)'],
             numInitZ3['(startt)'] == numInitZ3['(dist)'] ]
     goal = [numGoalZ3['(disl)'] == numGoalZ3['(startl)'], numGoalZ3['(dist)'] == numGoalZ3['(startt)'],
             propGoalZ3['(visitlt)'] == True, propGoalZ3['(visitrt)'] == True, propGoalZ3['(visitrb)'] == True,
@@ -74,7 +74,7 @@ def Hall_R(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [propInitZ3['(dectr)'] == False, propInitZ3['(dectl)'] == False, propInitZ3['(dectt)'] == False,
             propInitZ3['(dectb)'] == True, propInitZ3['(visitlt)'] == False, propInitZ3['(visitrt)'] == False,
             propInitZ3['(visitlb)'] == False, propInitZ3['(visitrb)'] == False, numInitZ3['(disr)'] == 0,
-            numInitZ3['(disl)'] >= 0, numInitZ3['(dist)'] >= 0, numInitZ3['(disb)'] >= 0,
+            numInitZ3['(disl)'] > 0, numInitZ3['(dist)'] > 0, numInitZ3['(disb)'] > 0,
             numInitZ3['(startl)'] == numInitZ3['(disl)'], numInitZ3['(startt)'] == numInitZ3['(dist)']]
     goal = [numGoalZ3['(disl)'] == numGoalZ3['(startl)'], numGoalZ3['(dist)'] == numGoalZ3['(startt)'],
             propGoalZ3['(visitlt)'] == True, propGoalZ3['(visitrt)'] == True, propGoalZ3['(visitrb)'] == True,
@@ -109,7 +109,7 @@ def TestOn(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
 def Visitall(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [propInitZ3['(visitr)'] == False, propInitZ3['(visitl)'] == False, numInitZ3['(disr)'] > 0,
             numInitZ3['(disl)'] == 0, numInitZ3['(dist)'] == 0, numInitZ3['(disb)'] > 0, numInitZ3['(numr)'] == 0]
-    goal = [numGoalZ3['(disb)'] + numGoalZ3['(dist)'] +1 == numGoalZ3['(numr)']]
+    goal = [numGoalZ3['(disb)'] + numGoalZ3['(dist)'] + 1 == numGoalZ3['(numr)']]
     return Init, goal
 
 
@@ -118,7 +118,7 @@ def Visitall_R(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
             propInitZ3['(dectr)'] == False, propInitZ3['(dectt)'] == False, propInitZ3['(dectb)'] == False,
             numInitZ3['(disr)'] > 0, numInitZ3['(disl)'] == 0, numInitZ3['(dist)'] == 0, numInitZ3['(disb)'] > 0,
             numInitZ3['(numr)'] == 0]
-    goal = [numGoalZ3['(disb)'] + numGoalZ3['(dist)'] == numGoalZ3['(numr)']]
+    goal = [numGoalZ3['(disb)'] + numGoalZ3['(dist)'] + 1 == numGoalZ3['(numr)']]
     return Init, goal
 
 
@@ -169,50 +169,50 @@ def NestVar8(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
 
 
 def MNestVar2(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    Init = [numInitZ3['(x1)'] >= 0, numInitZ3['(x2)'] >= 0]
+    Init = [numInitZ3['(x1)'] > 0, numInitZ3['(x2)'] > 0]
     goal = [numGoalZ3['(x1)'] == 0]
     return Init, goal
 
 
 def MNestVar3(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    Init = [numInitZ3['(x)'] >= 0, numInitZ3['(y)'] >= 0, numInitZ3['(z)'] >= 0]
+    Init = [numInitZ3['(x)'] > 0, numInitZ3['(y)'] > 0, numInitZ3['(z)'] > 0]
     goal = [numGoalZ3['(x)'] == 0]
     return Init, goal
 
 def MNestVar4(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    Init = [numInitZ3['(x1)'] >= 0, numInitZ3['(x2)'] >= 0, numInitZ3['(x3)'] >= 0, numInitZ3['(x4)'] >= 0]
+    Init = [numInitZ3['(x1)'] > 0, numInitZ3['(x2)'] > 0, numInitZ3['(x3)'] > 0, numInitZ3['(x4)'] > 0]
     goal = [numGoalZ3['(x1)'] == 0]
     return Init, goal
 
 def MNestVar5(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    Init = [numInitZ3['(x1)'] >= 0, numInitZ3['(x2)'] >= 0, numInitZ3['(x3)'] >= 0, numInitZ3['(x4)'] >= 0,
-            numInitZ3['(x5)'] >= 0]
+    Init = [numInitZ3['(x1)'] > 0, numInitZ3['(x2)'] > 0, numInitZ3['(x3)'] > 0, numInitZ3['(x4)'] > 0,
+            numInitZ3['(x5)'] > 0]
     goal = [numGoalZ3['(x1)'] == 0]
     return Init, goal
 
 def MNestVar6(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    Init = [numInitZ3['(x1)'] >= 0, numInitZ3['(x2)'] >= 0, numInitZ3['(x3)'] >= 0, numInitZ3['(x4)'] >= 0,
-            numInitZ3['(x5)'] >= 0, numInitZ3['(x6)'] >= 0]
+    Init = [numInitZ3['(x1)'] > 0, numInitZ3['(x2)'] > 0, numInitZ3['(x3)'] > 0, numInitZ3['(x4)'] > 0,
+            numInitZ3['(x5)'] > 0, numInitZ3['(x6)'] > 0]
     goal = [numGoalZ3['(x1)'] == 0]
     return Init, goal
 
 def MNestVar7(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    Init = [numInitZ3['(x1)'] >= 0, numInitZ3['(x2)'] >= 0, numInitZ3['(x3)'] >= 0, numInitZ3['(x4)'] >= 0,
-            numInitZ3['(x5)'] >= 0, numInitZ3['(x6)'] >= 0, numInitZ3['(x7)'] >= 0]
+    Init = [numInitZ3['(x1)'] > 0, numInitZ3['(x2)'] > 0, numInitZ3['(x3)'] > 0, numInitZ3['(x4)'] > 0,
+            numInitZ3['(x5)'] > 0, numInitZ3['(x6)'] > 0, numInitZ3['(x7)'] > 0]
     goal = [numGoalZ3['(x1)'] == 0]
     return Init, goal
 
 
 def MNestVar8(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    Init = [numInitZ3['(x1)'] >= 0, numInitZ3['(x2)'] >= 0, numInitZ3['(x3)'] >= 0, numInitZ3['(x4)'] >= 0,
-            numInitZ3['(x5)'] >= 0, numInitZ3['(x6)'] >= 0, numInitZ3['(x7)'] >= 0, numInitZ3['(x8)'] >= 0]
+    Init = [numInitZ3['(x1)'] > 0, numInitZ3['(x2)'] > 0, numInitZ3['(x3)'] > 0, numInitZ3['(x4)'] > 0,
+            numInitZ3['(x5)'] > 0, numInitZ3['(x6)'] > 0, numInitZ3['(x7)'] > 0, numInitZ3['(x8)'] > 0]
     goal = [numGoalZ3['(x1)'] == 0]
     return Init, goal
 
 def Childsnack(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    #(numnsc==0,numnst==0,numgsc==0,numgst==0,numnw>=0,numgw>=0,numnw+numgw>0,numnb>=numnw,numnc>=numnw,numgb>=numgw,numgc>=numgw)
+    #(numnsc==0,numnst==0,numgsc==0,numgst==0,numnw>=0,numgw>=0,numnw+numgw>0,numnb>numnw,numnc>=numnw,numgb>=numgw,numgc>=numgw)
     Init = [numInitZ3['(numnsk)'] == 0,numInitZ3['(numnst)'] == 0,numInitZ3['(numgsk)'] == 0,numInitZ3['(numgst)'] == 0,
-            numInitZ3['(numnc)'] >= 0,numInitZ3['(numgc)'] >= 0, numInitZ3['(numnc)'] + numInitZ3['(numgc)'] > 0,
+            numInitZ3['(numnc)'] > 0,numInitZ3['(numgc)'] > 0, numInitZ3['(numnc)'] + numInitZ3['(numgc)'] > 0,
             numInitZ3['(numnb)'] >= numInitZ3['(numnc)'],numInitZ3['(numni)'] >= numInitZ3['(numnc)'],
             numInitZ3['(numgb)'] >= numInitZ3['(numgc)'],numInitZ3['(numgi)'] >= numInitZ3['(numgc)'],
             propInitZ3['(atk)'] == True]
@@ -361,7 +361,8 @@ def Spanner(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
 #     return Init, goal
 
 def Baking(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
-    Init = [propInitZ3['(inep)'] == False, propInitZ3['(infp)'] == False, propInitZ3['(mixed)'] == False, propInitZ3['(inpo)'] == False,propInitZ3['(baked)'] == False, propInitZ3['(clean)'] == True,numInitZ3['(numcake)'] > 0]
+    Init = [propInitZ3['(inep)'] == False, propInitZ3['(infp)'] == False, propInitZ3['(mixed)'] == False,
+            propInitZ3['(inpo)'] == False,propInitZ3['(baked)'] == False, propInitZ3['(clean)'] == True,numInitZ3['(numcake)'] > 0]
     goal = [propGoalZ3['(clean)'] == True,  numGoalZ3['(numcake)'] == 0]
     return Init, goal
 

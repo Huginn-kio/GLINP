@@ -760,7 +760,7 @@ def isContainChoice(GenCode) :
 def simplifyGenCode(GenCode) :
     i = 0
     while i < len(GenCode):
-        if GenCode[i].flag == 'IFe' or ((GenCode[i].flag == 'IF' or GenCode[i].flag == 'Loop') and (GenCode[i].strcondition == 'False' or GenCode[i].strcondition == 'True')):
+        if GenCode[i].flag == 'IFe' or ((GenCode[i].flag == 'IF' or GenCode[i].flag == 'Loop') and GenCode[i].strcondition == 'False'):
             del GenCode[i]
         else:
             if GenCode[i].flag != 'Seq':
