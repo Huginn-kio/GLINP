@@ -26,7 +26,7 @@ def isCremental(exp,num):
         return False
 
 def getVariableFromFormula(formula):
-    return re.findall(r"(\([\d\w]*\)[io]?)", formula.__repr__())
+    return re.findall(r"(\([\d\w]*\)\d?[io]?)", formula.__repr__())
 
 def getCoff(var, condition):
     # global strList
@@ -214,18 +214,22 @@ def isAcyclic(numList, loopBodynumEff, prenumV):
     clearNodeIndex()
     initGraph(len(numList))
     for n in numList:
+        loopBodynumEff[n] = simplify(loopBodynumEff[n])
+    for n in numList:
         cur = prenumV[n].__repr__()
-        eff = loopBodynumEff[n] - prenumV[n]
+        eff = simplify(loopBodynumEff[n] - prenumV[n])
         ia = getNodeIndex(cur)
         if not is_int_value(eff) :
             varList = getVariableFromFormula(loopBodynumEff[n]);
             for item in varList:
-                ib = getNodeIndex(item)
-                addEdge(ia, ib)
+                if not item.__eq__(cur):
+                    ib = getNodeIndex(item)
+                    addEdge(ia, ib)
                 # print("add edge %d %s -> %d %s" %(ia,cur,ib,item))
-    print("Graph is following:")
-    printGraph()
-    print("#################")
+
+    # print("Graph is following:")
+    # printGraph()
+    # print("#################")
     return checkDAG(len(numList));
 
 def initGraph(len):
@@ -273,7 +277,7 @@ def checkDAG(len):
         visit = [False for x in range(len)]
         if isDAG:
             dfs(i, 0)
-        print("current maxDeth is:",maxDepth)
+        # print("current maxDeth is:",maxDepth)
     return isDAG
 
 
@@ -375,6 +379,46 @@ def uncondAct2Logic(act,proList,numList,lastproEff,lastnumEff):
     # print(numEff)
     # print('------------numEFFFF-------')
     return axioms,proEff,numEff
+
+# unconditional action with multiple last effect
+def uncondAct2LogicWithMulLastEff(act,proList,numList,lastproEff,lastnumEff):
+    axioms = []
+    proEff = {}
+    numEff = {}
+    effCount = 1
+    for n in numList:
+        effCount =  max(len(lastnumEff[n]) , effCount)
+
+    if effCount > 1:
+        for n in numList:
+            numEff[n] = []
+        for p in proList:
+            proEff[p] = []
+
+    for i in range(effCount):
+        lastproEffTemp = {}
+        lastnumEffTemp = {}
+        for n in numList:
+            lastnumEffTemp[n] = lastnumEff[n][i]
+        for p in proList:
+            lastproEffTemp[n] = lastproEff[n][i]
+        axiomsTemp,proEffTemp,numEffTemp = uncondAct2Logic(act, proList, numList, lastnumEffTemp, lastproEffTemp)
+        if effCount > 1:
+            axioms.append(axiomsTemp)
+        else:
+            axioms += axiomsTemp
+        for n in numList:
+            if effCount > 1:
+                numEff[n].append(numEffTemp[n])
+            else:
+                numEff[n] = numEffTemp[n]
+        for p in proList:
+            if effCount > 1:
+                proEff[p].append(proEffTemp[p])
+            else:
+                proEff[p] = proEffTemp[p]
+
+    return axioms, proEff, numEff
 
 # conditional action to logic formulas
 def condAct2Logic(act, propZ3pre, propZ3post, numZ3pre, numZ3post, proList, numList):
@@ -567,21 +611,20 @@ def getcondEff(act, propZ3pre, propZ3post, numZ3pre, numZ3post, proList, numList
     return axioms, effPros, effNums
 
 #verify goal-achievability and teminating and executability properties
-def verifyTEAndG(domain, init, goal, axiom, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3):
+def verifyTEAndG(domain, axiom, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3):
     states = []
     resultg = False
     resultt = False
 
-    if init == '' or goal == '':
-        init, goal = Switch.get(domain)(propInitZ3, propGoalZ3, numInitZ3, numGoalZ3)
+    init, goal = Switch.get(domain)(propInitZ3, propGoalZ3, numInitZ3, numGoalZ3)
 
     init = And(init)
     goal = And(goal)
-    #
-    print("------------------------------------------------------")
-    print("---------------------trace axioms---------------------")
-    print("------------------------------------------------------")
-    print(axiom)
+
+    # print("------------------------------------------------------")
+    # print("---------------------trace axioms---------------------")
+    # print("------------------------------------------------------")
+    # print(axiom)
 
     # print()
     # print("------------------------------------------------------")
@@ -685,3 +728,41 @@ def verifyTEAndG(domain, init, goal, axiom, propInitZ3, numInitZ3, propGoalZ3, n
         return True, states
     else:
         return False, states
+
+def getSortedNumV(numList,loopBodynumEff,prenumV):
+    loopEff = {}
+    cIncNums = {}
+    vIncNums = {}
+    linNums = {}
+    for n in numList:
+        loopEff[n] = simplify(loopBodynumEff[n] - prenumV[n])
+        cur = prenumV[n].__repr__()
+        if is_int_value(loopEff[n]) == True:
+            # print("c-incremental:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
+            cIncNums[n] = loopEff[n]
+        else:
+            # linear by contain it self
+            # print("linear:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
+            varList = getVariableFromFormula(loopBodynumEff[n]);
+            # print(varList)
+            if cur in varList:
+                vIncNums[n] = loopEff[n]
+            else:
+                linNums[n] = loopBodynumEff[n]
+    return cIncNums, vIncNums, linNums
+
+def isContainChoice(GenCode) :
+    for p in GenCode:
+        if p.flag == 'IF':
+            return True
+    return False
+
+def simplifyGenCode(GenCode) :
+    i = 0
+    while i < len(GenCode):
+        if GenCode[i].flag == 'IFe' or ((GenCode[i].flag == 'IF' or GenCode[i].flag == 'Loop') and (GenCode[i].strcondition == 'False' or GenCode[i].strcondition == 'True')):
+            del GenCode[i]
+        else:
+            if GenCode[i].flag != 'Seq':
+                simplifyGenCode(GenCode[i].actionList)
+            i += 1;

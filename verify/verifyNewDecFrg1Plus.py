@@ -4,23 +4,28 @@ import re
 from z3 import And, Implies, Not, Exists, substitute, simplify, is_int_value, Int, ForAll, Or
 from generate.datastructure import Program
 from utils.util import getCoff, getLinearTermInCondition, generateZ3Variable, uncondAct2Logic, isAcyclic, isCremental, \
-    verifyTEAndG, getVariableFromFormula, condAct2Logic, is2DArray, getSortedNumV
-from verify.verifyPseudoProgram import isPseudo, pseudoProgram2Logic
+    verifyTEAndG, isContainChoice, condAct2Logic, is2DArray
 
-# check whether a prorgam is program1
-def isProgram2(GenCode, actionList, proList, numList):
+# check whether a prorgam is program1Plus
+from verify.verifyNewDecFrg1 import program12Logic, isProgram1
+
+
+def isProgram1Plus(GenCode, actionList, proList, numList):
     if type(GenCode) == list:  # list type
         for program in GenCode:
-            if not isProgram2(program, actionList, proList, numList):
+            if not isProgram1Plus(program, actionList, proList, numList):
+                print(program.strcondition)
                 return False
         return True
 
     elif type(GenCode) == Program:  # one program
-        # no choice
-        if GenCode.flag == 'IF':
-            return isProgram2(GenCode.actionList, actionList, proList, numList)
         if GenCode.flag == 'IFe':
             return True
+
+        elif GenCode.flag == 'IF' :  # if-else
+            # print("contains IF")
+            return isProgram1Plus(GenCode.actionList, actionList, proList, numList)
+
         # action
         elif GenCode.flag == 'Seq':  # action seq
             return True
@@ -28,64 +33,56 @@ def isProgram2(GenCode, actionList, proList, numList):
         # loop
         elif GenCode.flag == 'Loop':
             # need modify to Pseudo primitive program
-            if not isPseudo(GenCode.actionList, actionList, proList, numList):
-                print("Loop body is not sat PP")
+            if not isProgram1(GenCode.actionList, actionList, proList, numList):
+                # print("Loop body is not sat program1")
                 return False
 
-            # 判断条件是否线性，是否-1，num是否incremental。pro是否simple
             else:
                 preproV, postproV, prenumV, postnumV = generateZ3Variable(proList, numList, 'i', 'o')
-                subSeqAxioms, loopBodyproEff, loopBodynumEff = pseudoProgram2Logic(GenCode.actionList, actionList,
-                                                                                   proList,
+                subSeqAxioms, loopBodyproEff, loopBodynumEff = program12Logic(GenCode.actionList, actionList, proList,
                                                                                    numList, preproV, postproV, prenumV,
                                                                                    postnumV)
 
                 # check whether props are simple
                 for k, v in loopBodyproEff.items():
                     if not (v == True or v == False or simplify(v == preproV[k])):
-                        print("Loop body prop " + k + " is not simple")
+                        print("Loop body prop is not simple")
                         return False
 
                 # 获得循环体的num变量变化
-                cIncNUm = []
+                cIncNum = []
                 loopEff = {}
-                varIncNums = {}
                 flag = True
                 for n in numList:
                     loopEff[n] = simplify(loopBodynumEff[n] - prenumV[n])
                     cur = prenumV[n].__repr__()
-                    if is_int_value(loopEff[n]) == True:
+                    if is_int_value(loopEff[n]):
                         # print("c-incremental:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
-                        cIncNUm.append(prenumV[n].__repr__())
+                        cIncNum.append(n)
                     else:
                         # linear by contain it self
                         # print("linear:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
-                        varList = getVariableFromFormula(loopBodynumEff[n]);
+                        varList = re.findall(r"(\([\d\w]*\)[io]?)", loopBodynumEff[n].__repr__())
                         # print(varList)
                         if cur in varList:
-                            varIncNums[n] = loopEff[n]
+                            print("constant symbol " + cur + " (" + loopBodynumEff[n].__repr__() + ")" +
+                                  " not sat c-incremental or linear")
+                            return False
                         flag = False
-                if flag:
+
+                if flag :
                     # print("all c-incremental")
                     return True
-                if not isAcyclic(numList, loopBodynumEff, prenumV):
+                if not isAcyclic(numList,loopBodynumEff,prenumV):
                     print("The body of loop is not acyclic")
                     return False
-                for n in numList:
-                    loopBodynumEff[n] = simplify(loopBodynumEff[n])
-                for n, e in varIncNums.items():
-                    for m in numList:
-                        e = simplify(substitute(e, (prenumV[m], loopBodynumEff[m])))
-                    if not e.__eq__(0):
-                        print("unsatisfied: var " + n + " before: " + varIncNums[n] + " after: " + e.__repr__())
-                        return False
                 return True
     else:
         return True
 
-# translate program2 to logic formula
+# translate restricted program to logic formula
 iteN = 0
-def program22Logic(program,actionList, proList, numList, root, preproV, prenumV, postproV, postnumV):
+def program1Plus2Logic(program, actionList, proList, numList, root, preproV, prenumV, postproV, postnumV):
     global iteN
     axioms = []
     axiom = []
@@ -145,7 +142,7 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
             elif str1 == 'True':
 
 
-                subaxiom = program22Logic(program[i].actionList, actionList, proList, numList,
+                subaxiom = program1Plus2Logic(program[i].actionList, actionList, proList, numList,
                                                                        root + str(i), preproV, prenumV,propZ3post,numZ3post)
 
                 preproV = propZ3post
@@ -161,8 +158,8 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
                 expCond = eval(str1)
 
                 #condition satisfied
-                subaxiomSat = program22Logic(program[i].actionList, actionList, proList, numList,
-                                                                       root + str(i), propZ3pre,numZ3pre,propZ3post,numZ3post)
+                subaxiomSat = program1Plus2Logic(program[i].actionList, actionList, proList, numList,
+                                                                       root + str(i), propZ3pre, numZ3pre,propZ3post,numZ3post)
 
 
                 exp1 = Implies(expCond, subaxiomSat)
@@ -201,7 +198,7 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
 
             else:
                 # obtain the axioms and effects of body
-                subLBaxioms, proEff, numEff = pseudoProgram2Logic(program[i].actionList, actionList, proList, numList,
+                subLBaxioms, proEff, numEff = program12Logic(program[i].actionList, actionList, proList, numList,
                                                                   propZ3pre, propZ3post, numZ3pre, numZ3post)
 
                 # print('----------1-------------')
@@ -222,9 +219,6 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
                 condt = program[i].strcondition
                 condT = program[i].strcondition
 
-                #obtain c-incre v-incre linear vars
-                cIncNumVs, vIncVs, linNumVs = getSortedNumV(numList,numEff, numZ3pre)
-
                 # obtain loop body effect
                 kloopEff = {}
                 k_1loopEff = {}
@@ -232,14 +226,13 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
 
                 # get K  k-1 effect of loop body
                 # only one dependency
-
                 for m in numList:
                     temp = simplify(numEff[m] - numZ3pre[m])
                     # c-incremental
-                    if m in cIncNumVs.keys() :
+                    if isCremental(temp, numZ3pre[m]):
                         kloopEff[m] = simplify(numZ3pre[m] + (t * temp))
                         k_1loopEff[m] = simplify(numZ3pre[m] + (t - 1) * temp)
-                    # assignment or v-incremental
+                    # assignment
                     else:
                         kloopEff[m] = numEff[m]
 
@@ -254,14 +247,13 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
                 # print('---------------0----------')
 
                 # get assignment effect
-                for k1, v1 in kloopEff.items():               # x2 : x1_0i - 1    # x1 : x1_0i - 2k + 2
-                    if k1 in linNumVs.keys() :
-                        for k2, v2 in k_1loopEff.items():
-                            # k1 is x2, k2 is x1, if x2 : x1_0i - 1 in kloopEff, it means numZ3pre(k2) (x1_0i) in v1 and k1 != k2,then we get kloopEff x2: x1_0i - 2k + 2 -1
-                            if str(numZ3pre[k2]) in str(v1) and k1 != k2:
-                                kloopEff[k1] = substitute(kloopEff[k1], (numZ3pre[k2], simplify(k_1loopEff[k2])))
+                for k1, v1 in kloopEff.items():  # x2 : x1_0i - 1
+                    for k2, v2 in k_1loopEff.items():  # x1 : x1_0i - 2k + 2
+                        # k1 is x2, k2 is x1, if x2 : x1_0i - 1 in kloopEff, it means numZ3pre(k2) (x1_0i) in v1 and k1 != k2,then we get kloopEff x2: x1_0i - 2k + 2 -1
+                        if str(numZ3pre[k2]) in str(v1) and k1 != k2:
+                            kloopEff[k1] = substitute(kloopEff[k1], (numZ3pre[k2], simplify(k_1loopEff[k2])))
 
-                #get n-iter loop effect
+                # get n-iter loop effect
                 for k, v in kloopEff.items():
                     nloopEff[k] = simplify(substitute(kloopEff[k], (t, T)))
 
@@ -309,8 +301,6 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
                 # print('---------------')
                 # print(subLBaxioms)
 
-
-
                 # delete (x)o == (x)i - c from subLBaxioms
                 lenNum = len(numList)
                 lenPro = len(proList)
@@ -319,7 +309,6 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
                     subLBaxioms = subLBaxioms[0:-lenVar]
                 # print(subLBaxioms)
                 # print('--------------')
-
 
                 # 循环体的前提的变量替换
                 # N > 0 and K > 0
@@ -360,13 +349,11 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
                 # N > 0 and K > 0
                 LBAxiomOverOne = And(t > 0, condt, simplify(subLBaxiom))
 
-
                 # N > 0 axioms - K = 0 or K > 0
-                LBAxiomTempOverZero.extend ([ T > 0, Not(condT), ForAll(t, Implies(And(0 <= t, t < T),
+                LBAxiomTempOverZero.extend([T > 0, Not(condT), ForAll(t, Implies(And(0 <= t, t < T),
                                                                                  Or(LBAxiomEuqOne, LBAxiomOverOne)))])
 
                 LBAxiomOverZero = And(cond0, Exists(T, And(LBAxiomTempOverZero)))
-
 
                 # final axioms
                 finalAxiom = Or(LBAxiomEuqZero, LBAxiomOverZero)
@@ -465,9 +452,8 @@ def program22Logic(program,actionList, proList, numList, root, preproV, prenumV,
     return axiom
 
 
-def verifyProgram2(domain, GenCode, actionList, proList, numList):
+def verifyProgram1Plus(domain, GenCode, actionList, proList, numList):
     root = ''
     propInitZ3, propGoalZ3, numInitZ3, numGoalZ3 = generateZ3Variable(proList, numList, 'i', 'g')
-    axiom = program22Logic(GenCode, actionList, proList, numList, root, propInitZ3, numInitZ3, propGoalZ3,
-                                    numGoalZ3)
+    axiom = program1Plus2Logic(GenCode, actionList, proList, numList, root, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3)
     return verifyTEAndG(domain, axiom, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3)

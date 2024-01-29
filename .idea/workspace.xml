@@ -2,14 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="improve structure of project">
-      <change afterPath="$PROJECT_DIR$/verify/verifyNewDecFrg1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/verify/verifyNewDecFrg2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test123.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/verify/verifyNewDecFrg1Plus.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/verify/verifyNewDecFrg3.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/verify/verifyNewDecFrg3Plus.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/generate/complete.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate/complete.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generate/generateplan.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate/generateplan.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generate/infskeleton.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate/infskeleton.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generate/enumrate.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate/enumrate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generate/generateinit.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate/generateinit.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parseGlinp/pddlLexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/parseGlinp/pddlLexer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parseGlinp/pddlParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/parseGlinp/pddlParser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parsePddl/pddlLexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/parsePddl/pddlLexer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parsePddl/pddlParser.py" beforeDir="false" afterPath="$PROJECT_DIR$/parsePddl/pddlParser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/verify/verifyNewDecFrg1.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyNewDecFrg1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/verify/verifyNewDecFrg2.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyNewDecFrg2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/verify/verifyPseudoProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyPseudoProgram.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/verify/verifyRestricedProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/verifyRestricedProgram.py" afterDir="false" />
     </list>
@@ -42,15 +50,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/home/maho/Desktop/GLINP/verify",
-    "nodejs_package_manager_path": "npm"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/maho/Desktop/GLINP/verify&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/verify" />
@@ -78,7 +86,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="-b 3 -n 3 -m 1 -f 3 -d Arith" />
+      <option name="PARAMETERS" value="-b 3 -m 1 -f 5 -d MNestVar3 -n 3" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -132,6 +140,11 @@
       <workItem from="1704468675969" duration="180000" />
       <workItem from="1704854300424" duration="16162000" />
       <workItem from="1704935839951" duration="23026000" />
+      <workItem from="1705045284774" duration="174000" />
+      <workItem from="1705045469084" duration="13775000" />
+      <workItem from="1705313661657" duration="25712000" />
+      <workItem from="1705730962555" duration="1224000" />
+      <workItem from="1706510901023" duration="8009000" />
     </task>
     <task id="LOCAL-00001" summary="123">
       <created>1704467098977</created>
@@ -189,18 +202,38 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/verify/verifyRestricedProgram.py</url>
-          <line>196</line>
+          <line>195</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/verify/verifyRestricedProgram.py</url>
-          <line>306</line>
+          <line>305</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/verify/verifyRestricedProgram.py</url>
-          <line>71</line>
+          <line>69</line>
           <option name="timeStamp" value="47" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/verify/verifyNewDecFrg2.py</url>
+          <line>376</line>
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/verify/verifyNewDecFrg1.py</url>
+          <line>267</line>
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/verify/verifyNewDecFrg1.py</url>
+          <line>266</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/verify/verifyNewDecFrg1Plus.py</url>
+          <line>55</line>
+          <option name="timeStamp" value="62" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -213,7 +246,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/GLINP$main.coverage" NAME="main Coverage Results" MODIFIED="1704979294066" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/GLINP$main.coverage" NAME="main Coverage Results" MODIFIED="1705161408119" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/GLINP$verifyRestricedProgram.coverage" NAME="verifyRestricedProgram Coverage Results" MODIFIED="1704894289274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/verify" />
   </component>
 </project>

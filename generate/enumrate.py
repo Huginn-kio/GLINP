@@ -521,7 +521,7 @@ def Enumrate(GenCode, variables, variablesP, flag):
         str1 = str(z3.simplify(Not(IFeCond)))
         for atom in MapstrM:
             str1 = str1.replace(atom[0], atom[1])
-        print(len(GenCode))
+        # print(len(GenCode))
         GenCode[IFeIndex].strcondition = str1
     return GenCode
 

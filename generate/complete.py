@@ -148,6 +148,37 @@ def getInitState(problemfileSet):
     return init
 
 
+def getInitialStateSet(problemfileSet):
+    init = []
+    for problemfile in problemfileSet:
+        prob = pddlProblem.parseDomainAndProblem(problemfile)
+        estado_objetivo = State([])
+        k = 0
+        for atom in prob.initialstate:
+            if isinstance(atom, pddlProblem.Formula):
+                ProBook[atom.subformulas[0].asPDDL()] = k
+                k = k + 1
+                if atom.op == "not":
+                    estado_objetivo.add_predicate(atom.subformulas[0].asPDDL(), 0)
+                else:
+                    estado_objetivo.add_predicate(atom.subformulas[0].asPDDL(), 1)
+            else:
+                tmpE = NumExpression(atom.op, atom.subexps[0].asPDDL(), atom.subexps[1].asPDDL())
+                estado_objetivo.add_numExpress(tmpE)
+        init.append(copy.deepcopy(estado_objetivo))
+
+    initset = []
+    for item in init:
+        inputs = {}
+        for (key, value) in item.predicates.items():
+            inputs[key] = True if float(value) == 1.0 else False
+        for atom in item.numExpress:
+            inputs[atom.left] = float(atom.right)
+        initset.append(inputs)
+
+    return initset
+
+
 # input: state of class State, action of class Operator
 def is_applicable(state, action):
     numState=state.numExpress
@@ -876,7 +907,7 @@ def complete(GenCode,domainfile,problemfile,planExamples):
         variablesP.append(atom)
     for atom in book.keys():
         variables.append(atom)
-    print("\n1. Tracking the trace of performing solution to collect positive state and negative state as follows:")
-    PrintProgram1(GenCode, 0)
+    # print("\n1. Tracking the trace of performing solution to collect positive state and negative state as follows:")
+    # PrintProgram1(GenCode, 0)
     Enumrate(GenCode, variables, variablesP, True)
     return GenCode, actionList, variablesP, variables

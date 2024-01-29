@@ -1,9 +1,7 @@
 from generate.datastructure import Program
 from verify.domain import Switch
-from utils.util import getCoff, getLinearTermInCondition, generateZ3Variable, uncondAct2Logic
+from utils.util import getCoff, getLinearTermInCondition, generateZ3Variable, uncondAct2Logic, verifyTEAndG
 from z3 import *
-
-times=0
 
 # check whether program is a pseudo primitive program
 def isPseudo(GenCode, actionList, proList, numList):
@@ -114,7 +112,8 @@ def isPseudo(GenCode, actionList, proList, numList):
 
 
 # translate pseudo primitive program to logic formulas
-def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, prenumV, postnumV):
+times=0
+def pseudoProgram2Logic(programList,actList,proList,numList, preproV, postproV, prenumV, postnumV):
     global times
     axioms = []
 
@@ -222,10 +221,22 @@ def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, p
             # +K
             inloopEff={}
             nloopEff={}
-            for n in numEff:
-                inloopEff[n] = simplify(numEff[n] + t * loopEff[n])
-                nloopEff[n] = simplify(numEff[n] + T * loopEff[n])
 
+            for n in numEff:
+                if not loopEff[n].__eq__(0):
+                    inloopEff[n] = simplify(numEff[n] + t * loopEff[n])
+                    nloopEff[n] = numEff[n] + T * loopEff[n]
+                else:
+                    inloopEff[n] = numEff[n]
+                    nloopEff[n] = numEff[n]
+                eff = simplify(nloopEff[n] - prenumV[n])
+                if not eff.__eq__(0):
+                    nloopEff[n] = prenumV[n] + eff
+                else:
+                    nloopEff[n] = prenumV[n]
+
+            # print("################")
+            # print(nloopEff)
             # 循环条件的变量替换
             for n in numList:
                 condt = condt.replace(n, 'inloopEff["'+n+'"]')
@@ -275,79 +286,12 @@ def pseudoProgram2Logic(programList,actList,proList,numList,preproV, postproV, p
     return axioms,proEff,numEff
 
 # verify pseudo primitive program
-def verifyPseudoProgram(GLINP,program,init,goal,actList,proList,numList):
-
-    preproV, postproV, prenumV, postnumV = generateZ3Variable(proList, numList, 'i', 'o')
-    init, goal = Switch.get(GLINP)(preproV, postproV, prenumV, postnumV)
-    init = And(init)
-    goal = And(goal)
-    axiom,proEff,numEff = pseudoProgram2Logic(program,actList,proList,numList,preproV, postproV, prenumV, postnumV)
-    # print(axiom)
+def verifyPseudoProgram(domain,GenCode,actionList,proList,numList):
+    propInitZ3, propGoalZ3, numInitZ3, numGoalZ3 = generateZ3Variable(proList, numList, 'i', 'g')
+    axiom, proEff, numEff = pseudoProgram2Logic(GenCode, actionList, proList, numList, propInitZ3, propGoalZ3, numInitZ3,
+                                           numGoalZ3)
     axiom = simplify(And(axiom))
-    s = Solver()
-
-    s.add(axiom)
-    #print(s.check())
-
-    #print()
-    #print()
-    #print('########################## verify ##################################')
-    #print(f'init:  {init}')
-    #print(f'goal:  {goal}')
-    #print(f'axiom:  {axiom}')
-    gaolAch = simplify(Not(Implies(And(axiom,init),goal)))
-
-
-    for k, v in postproV.items():
-        axiom = Exists(v, axiom)
-    for k, v in postnumV.items():
-        axiom = Exists(v, axiom)
-
-    teminate = simplify(Not(Implies(init,axiom)))
-    #print(f'goalAch:  {gaolAch}')
-    #print(f'teminate: {teminate}')
-
-    print()
-
-    #goalachevability
-    sg = Solver()
-    sg.add(gaolAch)
-    if sg.check() == sat:
-        # not achevable
-        m = sg.model()
-        # counter={}
-        # for p in proList:
-        #     counter[p]=m[eval(p[1:-1])]
-        # for n in numList:
-        #     print(n[1:-1])
-        #     counter[n]=m[eval(n[1:-1])].as_long()
-        print("Goal reachable Failed proven!!!!")
-        print("The counter Example:")
-        print(m)
-
-    else:
-        print("Goal reachable successful proven!!!!")
-
-    print()
-
-    #termination and executability
-    st = Solver()
-    st.add(teminate)
-    if st.check() == sat:
-        # not
-        m = st.model()
-        # counter = {}
-        # for p in proList:
-        #     counter[p] = m[preproV[p]]
-        # for n in numList:
-        #     counter[n] = m[prenumV[n]].as_long()
-        print("Termination and Executability Failed proven!!!!")
-        print("The counter Example:")
-        print(m)
-
-    else:
-        print("Termination and Executability successful proven!!!!")
-        return 0
+    return verifyTEAndG(domain, axiom, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3)
 
 
 

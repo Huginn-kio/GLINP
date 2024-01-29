@@ -3,9 +3,6 @@ from utils.util import isCremental, generateZ3Variable, is2DArray, isAcyclic, co
 from verify.verifyPseudoProgram import pseudoProgram2Logic, isPseudo
 from z3 import *
 
-# translate a retricted planning program
-iteN = 0
-
 # check whether a prorgam is a retricted planning program
 def isRestricted(GenCode, actionList, proList, numList):
     if type(GenCode) == list:  # list type
@@ -15,10 +12,11 @@ def isRestricted(GenCode, actionList, proList, numList):
         return True
 
     elif type(GenCode) == Program:  # one program
-        # no choice
+        # choice
         if GenCode.flag == 'IF':
             return isRestricted(GenCode.actionList, actionList, proList, numList)
-        if GenCode.flag == 'IFe':
+
+        elif GenCode.flag == 'IFe':
             return True
         # action
         elif GenCode.flag == 'Seq':  # action seq
@@ -31,7 +29,7 @@ def isRestricted(GenCode, actionList, proList, numList):
                 print("Loop body is not sat PP")
                 return False
 
-            # 判断条件是否线性，是否-1，num是否incremental。pro是否不变，
+            # 判断条件是否线性，是否-1，num是否incremental。pro是否simple
             else:
                 preproV, postproV, prenumV, postnumV = generateZ3Variable(proList, numList, 'i', 'o')
                 subSeqAxioms, loopBodyproEff, loopBodynumEff = pseudoProgram2Logic(GenCode.actionList, actionList, proList,
@@ -45,7 +43,7 @@ def isRestricted(GenCode, actionList, proList, numList):
                         return False
 
                 # 获得循环体的num变量变化
-                cIncNUm = []
+                cIncNum = []
                 loopEff = {}
                 flag = True
                 for n in numList:
@@ -53,14 +51,14 @@ def isRestricted(GenCode, actionList, proList, numList):
                     cur = prenumV[n].__repr__()
                     if is_int_value(loopEff[n]) == True:
                         # print("c-incremental:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
-                        cIncNUm.append(prenumV[n].__repr__())
+                        cIncNum.append(prenumV[n].__repr__())
                     else:
                         # linear by contain it self
                         # print("linear:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
                         varList = getVariableFromFormula(loopBodynumEff[n]);
                         # print(varList)
                         if cur in varList:
-                            print("constant symbol " + cur + " (" + loopBodynumEff[n] + ")" +
+                            print("constant symbol " + cur + " -it's effect: " +"(" + loopBodynumEff[n].__repr__() + ")" +
                                   " not sat c-incremental or linear")
                             return False
                         flag = False
@@ -77,6 +75,7 @@ def isRestricted(GenCode, actionList, proList, numList):
         return True
 
 # translate restricted program to logic formula
+iteN = 0
 def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV, prenumV, postproV, postnumV):
     global iteN
     axioms = []
@@ -101,7 +100,7 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
         if program[i].flag == 'Seq':
             act = program[i].actionList[0]
             axiomsNew, preproV, prenumV = condAct2Logic(actionList[act], propZ3pre, propZ3post, numZ3pre,
-                                                      numZ3post, proList, numList, preproV, prenumV)
+                                                      numZ3post, proList, numList)
 
             axioms += axiomsNew
 
@@ -137,7 +136,7 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
             elif str1 == 'True':
 
 
-                subaxiom = restrictedProgram2Logic(program[i].actionList, proList, numList,
+                subaxiom = restrictedProgram2Logic(program[i].actionList, actionList, proList, numList,
                                                                        root + str(i), preproV, prenumV,propZ3post,numZ3post)
 
                 preproV = propZ3post
@@ -153,7 +152,7 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
                 expCond = eval(str1)
 
                 #condition satisfied
-                subaxiomSat = restrictedProgram2Logic(program[i].actionList, proList, numList,
+                subaxiomSat = restrictedProgram2Logic(program[i].actionList, actionList, proList, numList,
                                                                        root + str(i), propZ3pre, numZ3pre,propZ3post,numZ3post)
 
 
@@ -453,8 +452,8 @@ def restrictedProgram2Logic(program,actionList, proList, numList, root, preproV,
     return axiom
 
 
-def verifyRestrictedProgram(domain, GenCode, init, goal, actionList, proList, numList):
+def verifyRestrictedProgram(domain, GenCode, actionList, proList, numList):
     root = ''
     propInitZ3, propGoalZ3, numInitZ3, numGoalZ3 = generateZ3Variable(proList, numList, 'i', 'g')
     axiom = restrictedProgram2Logic(GenCode, actionList, proList, numList, root, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3)
-    return verifyTEAndG(domain, init, goal, axiom, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3)
+    return verifyTEAndG(domain, axiom, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3)

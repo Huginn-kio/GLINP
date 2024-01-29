@@ -1,16 +1,16 @@
-# translate program1
+# translate program3
 import re
 
-from z3 import And, Implies, Not, substitute, simplify, is_int_value, Int, ForAll, Or
+from z3 import And, Implies, Not, Exists, substitute, simplify, is_int_value, Int, ForAll, Or
 from generate.datastructure import Program
 from utils.util import getCoff, getLinearTermInCondition, generateZ3Variable, uncondAct2Logic, isAcyclic, isCremental, \
     verifyTEAndG
 
-# check whether a prorgam is program1
-def isProgram1(GenCode, actionList, proList, numList):
+# check whether a prorgam is program3
+def isProgram3(GenCode, actionList, proList, numList):
     if type(GenCode) == list:  # list type
         for program in GenCode:
-            if not isProgram1(program, actionList, proList, numList):
+            if not isProgram3(program, actionList, proList, numList):
                 return False
         return True
 
@@ -32,8 +32,8 @@ def isProgram1(GenCode, actionList, proList, numList):
         # loop
         elif GenCode.flag == 'Loop':
             # need modify to Pseudo primitive program
-            if not isProgram1(GenCode.actionList, actionList, proList, numList):
-                # print("Loop body is not sat program1")
+            if not isProgram3(GenCode.actionList, actionList, proList, numList):
+                # print("Loop body is not sat program3")
                 return False
 
             else:
@@ -64,19 +64,16 @@ def isProgram1(GenCode, actionList, proList, numList):
 
                 # 获得循环体的num变量变化
                 cIncNumInCond = []
-                loopEff = {}
                 wInloop = []
+                loopEff = {}
                 flag = True
                 for n in numList:
                     loopEff[n] = simplify(loopBodynumEff[n] - prenumV[n])
                     cur = prenumV[n].__repr__()
                     if is_int_value(loopEff[n]):
                         # print("c-incremental:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
-                        if not loopEff[n].__eq__(0):
-                            if n in numIncond and (loopEff[n] == 1 or loopEff[n] == -1):
-                                wInloop.append(n)
-                            elif n in numIncond:
-                                cIncNumInCond.append(n)
+                        if not loopEff[n].__eq__(0) and n in numIncond :
+                            cIncNumInCond.append(n)
                     else:
                         # linear by contain it self
                         # print("linear:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
@@ -86,6 +83,8 @@ def isProgram1(GenCode, actionList, proList, numList):
                             print("constant symbol " + cur + " (" + loopBodynumEff[n] + ")" +
                                   " not sat c-incremental or linear")
                             return False
+                        elif n in numIncond:
+                            wInloop.append(n)
                         flag = False
 
                 if len(wInloop) != 1:
@@ -96,6 +95,14 @@ def isProgram1(GenCode, actionList, proList, numList):
                     return False
 
                 w = wInloop[0]
+                wEff = loopBodynumEff[w]
+                for n in numList:
+                    if n != w:
+                        wEff = substitute(wEff, (prenumV[n], loopEff[n]))
+
+                if not is_int_value(wEff) or not wEff.__eq__(1) or wEff.__eq__(-1):
+                    return False
+
                 coff = getCoff(w, condition)
                 if (abs(coff) != 1):
                     # print("Cw's coff in loop condition  is not sat")
@@ -114,13 +121,12 @@ def isProgram1(GenCode, actionList, proList, numList):
 # translate restricted program to logic formula
 level = 0
 iterN = 0
-def program12Logic(program,actionList, proList, numList, preproV, postproV, prenumV, postnumV):
+def program32Logic(program,actionList, proList, numList, preproV, postproV, prenumV, postnumV):
     global level
     global iterN
     axioms = []
 
     level += 1
-
 
     proEff = {}
     numEff = {}
@@ -140,7 +146,7 @@ def program12Logic(program,actionList, proList, numList, preproV, postproV, pren
 
         elif program[i].flag == 'Loop':
 
-            subLoopBodyAxioms, loopBodyproEff, loopBodynumEff = program12Logic(program[i].actionList, actionList,
+            subLoopBodyAxioms, loopBodyproEff, loopBodynumEff = program32Logic(program[i].actionList, actionList,
                                                                                proList, numList, preproV, postproV,
                                                                                prenumV, postnumV)
             iterN += 1
@@ -155,18 +161,34 @@ def program12Logic(program,actionList, proList, numList, preproV, postproV, pren
                 if n in cond:
                     numIncond.append(n)
 
+            # 获得循环体的num变量变化
+            loopEff = {}
+            wInloop = []
+            creNumVs = []
+            linNumVs = []
+            wInloop = {}
+            for n in numList:
+                loopEff[n] = simplify(loopBodynumEff[n] - prenumV[n])
+                cur = prenumV[n].__repr__()
+                if is_int_value(loopEff[n]):
+                    creNumVs.append(n)
+                else:
+                    # linear by contain it self
+                    # print("linear:",prenumV[n].__repr__()+" = "+loopBodynumEff[n].__repr__())
+                    varList = re.findall(r"(\([\d\w]*\)[io]?)", loopBodynumEff[n].__repr__())
+                    # print(varList)
+                    if cur not in varList:
+                        linNumVs.append(n)
+                        if n in numIncond:
+                            wInloop.append(n)
+
             # get linear term e
             eTmp = getLinearTermInCondition(cond, numList)
             for k, v in numEff.items():
                 eTmp = eTmp.replace(k, 'numEff["' + k + '"]')
                 cond = cond.replace(k, 'numEff["' + k + '"]')
-            e = eval(eTmp)
-            cond = eval(cond)
 
-            # 循环体递增递减值 variable: int  i.e. x : 1  or -1 or 0
-            loopEff = {}
-            for n in numList:
-                loopEff[n] = simplify(loopBodynumEff[n] - prenumV[n])
+            cond = eval(cond)
 
             # get N=e or N = -e
             for n in numIncond:
@@ -187,8 +209,7 @@ def program12Logic(program,actionList, proList, numList, preproV, postproV, pren
             kloopEff = {}
             k_1loopEff = {}
             nloopEff = {}
-            creNumVs = []
-            linNumVs = []
+
             for n in numList:
                 if isCremental(loopEff[n], prenumV[n]):
                     kloopEff[n] = simplify(numEff[n] + t * loopEff[n])
@@ -262,8 +283,8 @@ def program12Logic(program,actionList, proList, numList, preproV, postproV, pren
     return axioms, proEff, numEff
 
 
-def verifyProgram1(domain, GenCode, actionList, proList, numList):
+def verifyProgram3(domain, GenCode, actionList, proList, numList):
     propInitZ3, propGoalZ3, numInitZ3, numGoalZ3 = generateZ3Variable(proList, numList, 'i', 'g')
-    axiom,proEff,numEff = program12Logic(GenCode,actionList, proList, numList, propInitZ3, propGoalZ3, numInitZ3, numGoalZ3)
+    axiom,proEff,numEff = program32Logic(GenCode,actionList, proList, numList, propInitZ3, propGoalZ3, numInitZ3, numGoalZ3)
     axiom = simplify(And(axiom))
     return verifyTEAndG(domain, axiom, propInitZ3, numInitZ3, propGoalZ3, numGoalZ3)

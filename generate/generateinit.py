@@ -207,7 +207,7 @@ def generateInitialcons(domain):
     init_cons = convert_constraint_list_to_z3_type(init_cons_list, init_var_list, init_pred_list)
     goal_cons = convert_constraint_list_to_z3_type(goal_cons_list, goal_var_list, goal_pred_list)
 
-    print("init_cons: ", init_cons)
+    # print("init_cons: ", init_cons)
 
     # parse domain file to get predicates and functions
     dom = parseDomain(domainfile)
@@ -377,7 +377,7 @@ def generate_init_states(modelSort,stateSize,bound,init_upred_list,init_dpred_li
             notEqualList.append('And(' + notEqualItem + ")")
             init_text += ')'
             # print("init_text:",init_text)
-            print("new_init_states_cons:",new_init_states_cons)
+            # print("new_init_states_cons:",new_init_states_cons)
             solver = Solver()
             solver.add(goal_cons)
             if solver.check(new_init_states_cons) == sat:
@@ -570,7 +570,6 @@ def addInitialState(domain, modelSort,stateNum,states):
             f.writelines(problems_text[0])
             f.close()
             index = index + 1
-            times = times + 1
         else:
             print("Incorrect formalization of GLINP problem.")
             sys.exit()
