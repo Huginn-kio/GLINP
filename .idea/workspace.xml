@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="add complete2">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/util.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/verify/domain.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/domain.py" afterDir="false" />
-    </list>
+    <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="add complete2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,6 +22,16 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="MIXED" />
+  </component>
+  <component name="GitRewordedCommitMessages">
+    <option name="commitMessagesMapping">
+      <RewordedCommitMessageMapping>
+        <option name="originalMessage" value="add complete2" />
+        <option name="rewordedMessage" value="add complete2" />
+      </RewordedCommitMessageMapping>
+    </option>
+    <option name="currentCommit" value="1" />
+    <option name="onto" value="e5e9b5d62c2a167bd4660f50bea677a93c6d3275" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -131,7 +136,7 @@
       <workItem from="1705313661657" duration="25712000" />
       <workItem from="1705730962555" duration="1224000" />
       <workItem from="1706510901023" duration="16294000" />
-      <workItem from="1706588982540" duration="18599000" />
+      <workItem from="1706588982540" duration="19558000" />
     </task>
     <task id="LOCAL-00001" summary="123">
       <created>1704467098977</created>
@@ -175,7 +180,14 @@
       <option name="project" value="LOCAL" />
       <updated>1706537472857</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="add complete2">
+      <created>1706683917832</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1706683917832</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

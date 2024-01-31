@@ -1,0 +1,12 @@
+(define(problem pro-miconic1)
+(:domain miconic1)
+(:init
+( = (topf) 2)
+( = (numf) 1)
+( = (cap) 1)
+( = (curf) 1)
+( = (numt) 0)
+( = (nume) 0)
+)
+(:goal(and(=(curf)1)(=(nume)0)(=(numf)0)))
+)

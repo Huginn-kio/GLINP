@@ -1,0 +1,11 @@
+(define(problem blocksplace-pro)
+(:domain blocksplace)
+(:init
+(empty)
+(not (heldX))
+(not (XOnY))
+( = (nx) 2)
+( = (ny) 1)
+)
+(:goal(and(XOnY)))
+)

@@ -1,0 +1,10 @@
+(define(problem pro-Corner-A)
+(:domain Corner-A)
+(:init
+( = (disr) 2)
+( = (disl) 0)
+( = (dist) 3)
+( = (disb) 0)
+)
+(:goal(and(=(disr)0)(=(dist)0)))
+)

@@ -1,0 +1,13 @@
+(define(problem mnestvar7)
+(:domain mnestvar7)
+(:init
+( = (x1) 1)
+( = (x2) 1)
+( = (x3) 7)
+( = (x4) 2)
+( = (x5) 5)
+( = (x6) 3)
+( = (x7) 2)
+)
+(:goal(and(=(x1)0)))
+)

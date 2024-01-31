@@ -1,0 +1,13 @@
+(define(problem pro-visitall)
+(:domain visitall)
+(:init
+(not (visitr))
+(not (visitl))
+( = (disr) 5)
+( = (disb) 3)
+( = (disl) 0)
+( = (dist) 0)
+( = (numr) 0)
+)
+(:goal(and(=(numr)(+(+(disb)(dist))1))))
+)
