@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="add complete2" />
+    <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="add complete2">
+      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob1.pddl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob2.pddl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob3.pddl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob4.pddl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob5.pddl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob6.pddl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob7.pddl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob8.pddl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob9.pddl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -137,6 +148,7 @@
       <workItem from="1705730962555" duration="1224000" />
       <workItem from="1706510901023" duration="16294000" />
       <workItem from="1706588982540" duration="19558000" />
+      <workItem from="1708266499594" duration="828000" />
     </task>
     <task id="LOCAL-00001" summary="123">
       <created>1704467098977</created>

@@ -245,6 +245,7 @@ def iterativeGenerateAndTest(domain):
                 j = 1
                 for s in initset:
                     if s in counterexamples:
+                        print('Iteration: ', iteration)
                         print('errer, counterexample exists in the initSet')
                         print('initSet:')
                         printInitStates(initset)
