@@ -28,6 +28,12 @@ def Corner_R(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     goal = [numGoalZ3['(disr)'] == 0,  numGoalZ3['(dist)'] == 0]
     return Init, goal
 
+def Corner_Random(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
+    Init = [numInitZ3['(disr)'] > 0, numInitZ3['(disl)'] > 0, numInitZ3['(dist)'] > 0,
+            numInitZ3['(disb)'] > 0]
+    goal = [numGoalZ3['(disr)'] == 0,  numGoalZ3['(dist)'] == 0]
+    return Init, goal
+
 def Delivery(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [numInitZ3['(numd)'] > 0, numInitZ3['(numc)'] == 0, numInitZ3['(numt)'] == 0, numInitZ3['(cap)'] > 0]
     goal = [numGoalZ3['(numd)'] == 0,  numGoalZ3['(numt)'] == 0, propGoalZ3['(atd)'] == True]
@@ -47,6 +53,15 @@ def D_Return_R(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [propInitZ3['(visitlt)'] == False, propInitZ3['(visitrt)'] == False,
             propInitZ3['(visitrb)'] == False, propInitZ3['(dectr)'] == False, propInitZ3['(dectl)'] == True,
             propInitZ3['(dectt)'] == False, propInitZ3['(dectb)'] == False, numInitZ3['(disr)'] > 0,
+            numInitZ3['(disl)'] > 0, numInitZ3['(dist)'] > 0, numInitZ3['(disb)'] > 0,
+            numInitZ3['(startl)'] == numInitZ3['(disl)'], numInitZ3['(startt)'] == numInitZ3['(dist)']]
+    goal = [numGoalZ3['(disl)'] == numGoalZ3['(startl)'], numGoalZ3['(dist)'] == numGoalZ3['(startt)'],
+            propGoalZ3['(visitlt)'] == True, propGoalZ3['(visitrt)'] == True, propGoalZ3['(visitrb)'] == True]
+    return Init, goal
+
+def D_Return_Random(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
+    Init = [propInitZ3['(visitlt)'] == False, propInitZ3['(visitrt)'] == False,
+            propInitZ3['(visitrb)'] == False, numInitZ3['(disr)'] > 0,
             numInitZ3['(disl)'] > 0, numInitZ3['(dist)'] > 0, numInitZ3['(disb)'] > 0,
             numInitZ3['(startl)'] == numInitZ3['(disl)'], numInitZ3['(startt)'] == numInitZ3['(dist)']]
     goal = [numGoalZ3['(disl)'] == numGoalZ3['(startl)'], numGoalZ3['(dist)'] == numGoalZ3['(startt)'],
@@ -73,6 +88,17 @@ def Hall_A(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
 def Hall_R(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [propInitZ3['(dectr)'] == False, propInitZ3['(dectl)'] == False, propInitZ3['(dectt)'] == False,
             propInitZ3['(dectb)'] == True, propInitZ3['(visitlt)'] == False, propInitZ3['(visitrt)'] == False,
+            propInitZ3['(visitlb)'] == False, propInitZ3['(visitrb)'] == False, numInitZ3['(disr)'] == 0,
+            numInitZ3['(disl)'] > 0, numInitZ3['(dist)'] > 0, numInitZ3['(disb)'] > 0,
+            numInitZ3['(startl)'] == numInitZ3['(disl)'], numInitZ3['(startt)'] == numInitZ3['(dist)']]
+    goal = [numGoalZ3['(disl)'] == numGoalZ3['(startl)'], numGoalZ3['(dist)'] == numGoalZ3['(startt)'],
+            propGoalZ3['(visitlt)'] == True, propGoalZ3['(visitrt)'] == True, propGoalZ3['(visitrb)'] == True,
+            propGoalZ3['(visitlb)'] == True]
+    return Init, goal
+
+
+def Hall_Random(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
+    Init = [propInitZ3['(visitlt)'] == False, propInitZ3['(visitrt)'] == False,
             propInitZ3['(visitlb)'] == False, propInitZ3['(visitrb)'] == False, numInitZ3['(disr)'] == 0,
             numInitZ3['(disl)'] > 0, numInitZ3['(dist)'] > 0, numInitZ3['(disb)'] > 0,
             numInitZ3['(startl)'] == numInitZ3['(disl)'], numInitZ3['(startt)'] == numInitZ3['(dist)']]
@@ -121,6 +147,13 @@ def Visitall_R(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     goal = [numGoalZ3['(disb)'] + numGoalZ3['(dist)'] + 1 == numGoalZ3['(numr)']]
     return Init, goal
 
+
+def Visitall_Random(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
+    Init = [propInitZ3['(visitr)'] == False, propInitZ3['(visitl)'] == False,
+            numInitZ3['(disr)'] > 0, numInitZ3['(disl)'] == 0, numInitZ3['(dist)'] == 0, numInitZ3['(disb)'] > 0,
+            numInitZ3['(numr)'] == 0]
+    goal = [numGoalZ3['(disb)'] + numGoalZ3['(dist)'] + 1 == numGoalZ3['(numr)']]
+    return Init, goal
 
 def NestVar2(propInitZ3,propGoalZ3,numInitZ3,numGoalZ3):
     Init = [numInitZ3['(x1)'] > 0, numInitZ3['(x2)'] > 0]
@@ -373,9 +406,9 @@ def Miconic(propInitZ3, propGoalZ3, numInitZ3, numGoalZ3):
     return Init, goal
 
 Switch = {'Arith':Arith,'Baking':Baking,'Chop':Chop,'ClearBlock':ClearBlock,'Delivery':Delivery,'Floortile':Floortile,'Grid':Grid,'Gripper':Gripper,
-          'Corner-A':Corner_A,'Corner-R':Corner_R,'Corridor':Corridor,'Hall-A':Hall_A,'Hall-R':Hall_R,'Hiking':Hiking,'Intrusion':Intrusion,'Lock':Lock,'PlaceBlock': PlaceBlock,
-          'D-Return':D_Return,'D-Return-R':D_Return_R,'Rewards': Rewards,'Snow':Snow,'Spanner':Spanner,'Childsnack':Childsnack,
-          'TestOn':TestOn,'Visitall':Visitall,'visitall-R':Visitall_R,
+          'Corner-A':Corner_A,'Corner-R':Corner_R,'Corner-Random':Corner_Random,'Corridor':Corridor,'Hall-A':Hall_A,'Hall-R':Hall_R,'Hall-Random':Hall_Random,'Hiking':Hiking,'Intrusion':Intrusion,'Lock':Lock,'PlaceBlock': PlaceBlock,
+          'D-Return':D_Return,'D-Return-R':D_Return_R,'D-Return-Random':D_Return_Random,'Rewards': Rewards,'Snow':Snow,'Spanner':Spanner,'Childsnack':Childsnack,
+          'TestOn':TestOn,'Visitall':Visitall,'visitall-R':Visitall_R,"Visitall-Random":Visitall_Random,
           'Barman':Barman, 'Barman3':Barman3, 'Barman4':Barman4,'Barman5':Barman5,'Barman6':Barman6,'Barman7':Barman7,'Barman8':Barman8,
           'NestVar2':NestVar2, 'NestVar3':NestVar3,'NestVar4':NestVar4,'NestVar5':NestVar5,'NestVar6':NestVar6,'NestVar7':NestVar7, 'NestVar8':NestVar8,
           'Nomystery':Nomystery,'Miconic':Miconic,'MNestVar2':MNestVar2, 'MNestVar3':MNestVar3, 'MNestVar4':MNestVar4, 'MNestVar5':MNestVar5, 'MNestVar6':MNestVar6, 'MNestVar7':MNestVar7, 'MNestVar8':MNestVar8}

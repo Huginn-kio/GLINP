@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="4338c81e-d86e-4b3c-87c7-1c92ba6db96a" name="Changes" comment="add complete2">
-      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob1.pddl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob2.pddl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob3.pddl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob4.pddl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob5.pddl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob6.pddl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob7.pddl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob8.pddl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/domain/Visitall/Random/prob9.pddl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/domain/Hall-Random/domain.pddl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/domain/Hall-Random/glinp.pddl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generate/generateinit.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate/generateinit.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/verify/domain.py" beforeDir="false" afterPath="$PROJECT_DIR$/verify/domain.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,15 +50,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/maho/Desktop/ICAPS&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/wxm/桌面/2023-12-13-final-f",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/verify" />
@@ -81,14 +80,15 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="$USER_HOME$/anaconda3/bin/python" />
+      <option name="SDK_NAME" value="$USER_HOME$/anaconda3" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="-b 3 -m 2 -t 2 -d NestVar2 -n 1" />
+      <option name="PARAMETERS" value="-b 3 -m 2 -t 2 -d Visitall-Random -n 2" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -269,6 +269,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/GLINP$main.coverage" NAME="main Coverage Results" MODIFIED="1706599496468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/glinp$main.coverage" NAME="main 覆盖结果" MODIFIED="1708394527742" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/GLINP$verifyRestricedProgram.coverage" NAME="verifyRestricedProgram Coverage Results" MODIFIED="1704894289274" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/verify" />
   </component>
 </project>

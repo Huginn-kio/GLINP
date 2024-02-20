@@ -10,6 +10,24 @@ from parseGlinp.pythonpddl.parsedomain import Function, parseTypeVariableList, p
 from parseGlinp.pythonpddl.parsepddl import parseTypeNameList, TypedArgList, Predicate
 
 
+#                 (or ( and (dectl) (not(dectr))  (not(dectt)) (not(dectb)) )
+#                    (and  (not(dectl)) (dectr) (not(dectt)) (not(dectb)) )
+#                    (and  (not(dectl)) (not(dectr)) (dectt) (not(dectb)) )
+#                    (and  (not(dectl)) (not(dectr)) (not(dectt)) (dectb) )
+#                 )
+
+
+RArr = ['Corner-Random','D-Return-Random','Hall-Random','Visitall-Random']
+dectl,dectr,dectt,dectb=Bools('dectl dectr dectt dectb')
+RCondition = Or(
+        And(dectl, Not(dectr), Not(dectt), Not(dectb)),
+        And(Not(dectl), dectr, Not(dectt), Not(dectb)),
+        And(Not(dectl), Not(dectr), dectt, Not(dectb)),
+        And(Not(dectl), Not(dectr), Not(dectt), dectb)
+)
+# print("RCondition:",RCondition)
+
+
 # get a parser tree corresponding to a pddl file
 def readAndParseFile(file):
     inp = FileStream(file)
@@ -137,6 +155,7 @@ def convert_prefix_expression_list_to_constraint_list(prefix_expression_list):
     :return predicate_list: predicate list such as ['contable', 'sontable', 'cempty', 'cclean', 'ccontainig', 'ccontainct', 'scontainct']
 
     """
+    # print("prefix_expression_list:",prefix_expression_list)
     global variables_list
     global predicate_list
     variables_list = []
@@ -203,11 +222,22 @@ def generateInitialcons(domain):
     init_cons_list, init_var_list, init_pred_list = convert_prefix_expression_list_to_constraint_list(init_state)
     goal_cons_list, goal_var_list, goal_pred_list = convert_prefix_expression_list_to_constraint_list(goal_state)
 
+    # print("init_cons_list, init_var_list, init_pred_list:",init_cons_list, init_var_list, init_pred_list)
+    # print("goal_cons_list, goal_var_list, goal_pred_list:",goal_cons_list, goal_var_list, goal_pred_list)
+
     # original z3 constraints for init
     init_cons = convert_constraint_list_to_z3_type(init_cons_list, init_var_list, init_pred_list)
     goal_cons = convert_constraint_list_to_z3_type(goal_cons_list, goal_var_list, goal_pred_list)
 
     # print("init_cons: ", init_cons)
+    # print("goal_cons: ", goal_cons)
+
+    if(domain in RArr):
+        init_cons = And(init_cons,RCondition)
+
+    # print("domain:",domain)
+    # print("init_cons: ", init_cons)
+    # print("goal_cons: ", goal_cons)
 
     # parse domain file to get predicates and functions
     dom = parseDomain(domainfile)
