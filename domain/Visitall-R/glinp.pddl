@@ -1,0 +1,22 @@
+(define (problem pro-visitall-R)
+        (:domain visitall-R)
+        (:init
+              (and
+                (not (dectr))
+                (dectl)
+                (not (dectt))
+                (not (dectb))
+                (not (visitr))
+                (not (visitl))
+                (>= (disr) 0)
+                (= (disl) 0)
+                (= (dist) 0)
+                (>= (disb) 0)
+                (= (numr) 0)
+              )
+        )
+        (:goal (and
+               (= (numr) (+ (disb) (dist)))
+               )
+        )
+)

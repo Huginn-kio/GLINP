@@ -1,0 +1,26 @@
+(define (problem barman)
+        (:domain barman)
+        (:init
+                (and
+                (not (holding))
+                (empty)
+                (not (containIg1))
+                (not (containIg2))
+                (not (containCt))
+                (> (numg) 0)
+                (> (numig1) 0)
+                (> (numig2) 0)
+                (> (numct) 0)
+                (= (numg) (numct))
+                (>= (numig1) (numct))
+                (>= (numig2) (numct))
+                )
+        )
+        (:goal
+              (and
+              (= (numct) 0)
+              (empty)
+              (not (holding))
+              )
+        )
+)
