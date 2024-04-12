@@ -49,10 +49,13 @@ The result after running:
 ------------------------------------------------------
 ---------------------Generate Initial States----------------
 ------------------------------------------------------
+ANTLR runtime and generated code versions disagree: 4.8!=4.7.2
 init_cons:  And(v1 == 0, v2 == 0, n > 0)
+ANTLR runtime and generated code versions disagree: 4.8!=4.7.2
 new_init_states_cons: [n == 3, v1 == 0, v2 == 0]
 new_init_states_cons: [n == 4, v1 == 0, v2 == 0]
 new_init_states_cons: [n == 5, v1 == 0, v2 == 0]
+ANTLR runtime and generated code versions disagree: 4.8!=4.7.2
 
 ------------------------------------------------------
 ---------------------Generate Plans----------------
@@ -62,6 +65,7 @@ new_init_states_cons: [n == 5, v1 == 0, v2 == 0]
 ['INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV1', 'INCV1', 'INCV1']
 ['INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV1', 'INCV1', 'INCV1', 'INCV1']
 ['INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV2', 'INCV1', 'INCV1', 'INCV1', 'INCV1', 'INCV1']
+ANTLR runtime and generated code versions disagree: 4.8!=4.7.2
 
 2.The action representing by letter as follows:
 {'INCV1': 'a', 'INCV2': 'b', 'EMPTYACTION': '#'}
@@ -70,6 +74,9 @@ new_init_states_cons: [n == 5, v1 == 0, v2 == 0]
 ------------------------------------------------------
 ---------------------InfSkeleton----------------
 ------------------------------------------------------
+
+ the abbr char of example list:
+['bbbbbbbaaa', 'bbbbbbbbbaaaa', 'bbbbbbbbbbbaaaaa']
 
 1. The multiple lowercase letter representing by single uppercase letter as follows:
 {'(b)*': 'A', '(a)*': 'B'}
@@ -95,54 +102,38 @@ new_init_states_cons: [n == 5, v1 == 0, v2 == 0]
 
 8. Identification of Alternation Subregexes:
 [[], [], []]
+['A', 'B']
+The regex List of program:
+['A', 'B']
 
 9. The Program Skeleton:
-while phi1 do
-    INCV2
-od;
-while phi2 do
-    INCV1
-od
+(INCV2*,INCV1*)
+
+10. The regex of Program:
+((((b)*))(((a)*)))
 
 ------------------------------------------------------
 ---------------------Complete----------------
 ------------------------------------------------------
 
 1. Tracking the trace of performing solution to collect positive state and negative state as follows:
-while phi1 do
-    INCV2
-od;
-while phi2 do
-    INCV1
-od
 
 2. The generated Planning Program as follow:
 while (n) != (v2) - ((n) + 1) do
-    INCV2
-od;
-while (n) != (v1) do
-    INCV1
-od
-
-
-------------------------------------------------------
----------------------Verify---------------------------
-------------------------------------------------------
-
-The Correctness Verification of Program as follow:
-
-Goal reachable successful proven!!!!
-
-Termination and Executability successful proven!!!!
-
-Verification Time: 0.029113s
+ INCV2
+ od·
+while (n) - (v1) != 0 do
+ INCV1
+ od
+The length of Planning Program is:21
+The depth of Planning Program is:1
+Generation Time: 1.706589s
 
 #######################################################
 ##################                  ###################
 ##################        END       ###################
 ##################                  ###################
 #######################################################
-
 
 
 
