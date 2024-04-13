@@ -292,7 +292,7 @@ def GenerateRecursiveAlterStructure(RegexList, actionToLetterList, letterToActio
         if (RegexList[1]>=MIN_CHAR and RegexList[1]<=MAX_CHAR)  or (RegexList[1]==emptyAction) :
             firstActions=letterToActionList[RegexList[1]] if RegexList[1]!=emptyAction  else emptyActionName 
             secondAbbrChar=RegexList[1] if RegexList[1]!=emptyAction  else emptyAction
-            regex=regex+'|'+secondAbbrChar if RegexList[1]!=emptyAction  else emptyRegex
+            regex=regex+'|'+(secondAbbrChar if RegexList[1]!=emptyAction  else emptyRegex)
         if(RegexList[1]>=MIN_LARGE_CHAR and  RegexList[1]<=MAX_LARGE_CHAR):
             nestChar1=nestToLetterList[RegexList[1]]
             secondActions=GenerateRecursiveSeqAndLoopStructure(nestChar1, actionToLetterList, letterToActionList)  
@@ -359,6 +359,7 @@ def GenerateRecursiveSeqAndLoopStructure(RegexList, actionToLetterList, letterTo
         if(RegexList[0]>=MIN_LARGE_CHAR and  RegexList[0]<=MAX_LARGE_CHAR):
             nestChar0=nestToLetterList[RegexList[0]]
             firstActions=GenerateRecursiveSeqAndLoopStructure(nestChar0, actionToLetterList, letterToActionList)
+            regex+=firstActions.regex
         secondActions=GenerateRecursiveSeqAndLoopStructure(RegexList[1:], actionToLetterList, letterToActionList)
         regex+=secondActions.regex
     if flag=='Loop':
@@ -432,9 +433,9 @@ def preorderTraversal(genPlan):
 def printOutProg(genPlan,length):
     expr=''
     if genPlan is None:
-        return expr
+        return expr,length
     if isinstance(genPlan,str):
-        return genPlan
+        return genPlan,length+1
     length = length + 1 + len(str(genPlan.condition).split(" ")) + 1 + str(genPlan.condition).count('And') + genPlan.condition.count('Not') + genPlan.condition.count('Or') if length!='condition' else 1
     subexpr,length=printOutProg(genPlan.firstActions,length)
     expr+=subexpr
@@ -448,8 +449,18 @@ def printOutProg(genPlan,length):
         subexpr,length=printOutProg(genPlan.secondActions,length)
         expr+=subexpr
     if genPlan.flag=='Loop':
-        expr='while ' + str(genPlan.condition) +' do '+ expr + ' od'+ '\n'
+        expr='while ' + str(genPlan.condition) +' do\n '+ expr + '\n od'
     return expr,length
+
+def computeDepthOfProg(genPlan,depth):
+    if genPlan is None or isinstance(genPlan,str):
+        return depth
+    if genPlan.flag=='Loop':
+        depth=depth+1
+    firstDepth=computeDepthOfProg(genPlan.firstActions,depth)
+    secondDepth=computeDepthOfProg(genPlan.secondActions,depth)
+    depth=firstDepth if firstDepth>secondDepth else secondDepth
+    return depth
 
 def FoldString(Regex):
     """
@@ -479,9 +490,19 @@ def FoldString(Regex):
         size = size + 1
     return Regex
 
+def printExamList(examList,actionToLetterList):
+    plan=[]
+    for exam in examList:
+        plan_char=''
+        for e in exam:
+            plan_char+=e.name
+        plan.append(plan_char)
+    return plan
+
 def infskeleton(ItemPlan, actionToLetterList, letterToActionList):
     global  phi
-
+    print("\n the abbr char of example list:")
+    print(printExamList(ItemPlan,actionToLetterList))
     regexSet = []
     # every Item in ItemPlan is a list of Item which stands for a plan such as [Item('a','a','S'),Item('b','b','S')]
     for Regex in ItemPlan:
@@ -512,7 +533,6 @@ def infskeleton(ItemPlan, actionToLetterList, letterToActionList):
     print(res4)
     print("\n6. Alignment of Iteration Subregexes representing by unrepeated Abbreviation:")
     print(unrepeatedRegex)
-
     commonRegex = ''
 
     if(len(unrepeatedRegex)>1):
@@ -535,12 +555,14 @@ def infskeleton(ItemPlan, actionToLetterList, letterToActionList):
 
     print(RegexList)
     # use commonRegex and A_regexSet to generate the Program Skeleton
-
+    print('The regex List of program:')
+    print(RegexList)
     GenProgram = GenerateRecursiveProgram(RegexList, actionToLetterList, letterToActionList)
 
     print("\n9. The Program Skeleton:")
     phi = 1
     print(preorderTraversal(GenProgram))
+    print("\n10. The regex of Program:")
     print(GenProgram.regex)
     return GenProgram
 

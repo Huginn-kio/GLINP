@@ -190,8 +190,8 @@ def getLinearTermInCondition(cond,numList):
 def is2DArray(a):
     for i in range(len(a)):
         if type(a[i]) is list:
-            return True
-    return False
+            return True;
+    return False;
 
 def replace_first(pattern, repl, string):
     # 使用maxsplit=1确保只替换第一个匹配

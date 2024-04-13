@@ -5,7 +5,7 @@ import time
 from complete import completeMain
 from generateinit import modifyGenerateInitialState, addInitialState
 from generateplan import generateItemPlan
-from infskeleton import infskeleton, printOutProg
+from infskeleton import infskeleton, printOutProg,computeDepthOfProg
 from verifyProgram import  verifyProgram
 default=3
 #the bound of variable
@@ -78,10 +78,14 @@ def generatePlanningProgram(domain):
 
     domainfile = './domain/' + domain + '/domain.pddl'
 
-    GenProgram,actionList,proList,numList = completeMain(GenProgram,domainfile,probfileSet,plans, actionToLetterList, letterToActionList)
+    GenProgram,actionList,proList,numList = completeMain(GenProgram,domainfile,probfileSet,plans,actionToLetterList, letterToActionList)
 
     print("\n2. The generated Planning Program as follow:")
     program,length=printOutProg(GenProgram,0)
+    depth=computeDepthOfProg(GenProgram,0)
+    print(program)
+    print("The length of Planning Program is:{}".format(length))
+    print("The depth of Planning Program is:{}".format(depth))
 
 
     return GenProgram,actionList,proList,numList
@@ -94,10 +98,7 @@ def GenerateGLINP(domain):
     GenCode, actionList, proList, numList = generatePlanningProgram(domain)
     e2 = time.time()
     print('Generation Time: %fs' % (e2 - e1))
-    # verify restricted planning program
-    # e1 = time.time()
-    # verifyProgram(domain, GenCode, '', '', actionList, proList, numList)
-    # e2 = time.time()
+
     print()
     print("#######################################################")
     print("##################                  ###################")

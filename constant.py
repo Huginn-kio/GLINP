@@ -1,7 +1,7 @@
 FINISH_FLAG='finish'
 emptyAction='#'
 emptyActionName='EmptyAction'
-emptyRegex='^$'
+emptyRegex=''
 MIN_CHAR='a'
 MAX_CHAR='z'
 MIN_LARGE_CHAR='A'
