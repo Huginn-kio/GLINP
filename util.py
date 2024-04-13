@@ -226,7 +226,10 @@ def custom_match(pattern, string, matchCount=2,flags=0):
     # 重新编译修改后的正则表达式
     modified_pattern = re.compile(modified_regex, flags)  
     # 使用修改后的正则表达式进行匹配
-    return modified_pattern.match(string)
+    res=modified_pattern.fullmatch(string)
+    if res is None:
+        res=modified_pattern.match(string)
+    return res
 
 def lcs(str1, str2):
     sm = difflib.SequenceMatcher()

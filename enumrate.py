@@ -415,11 +415,15 @@ def Enumrate(exampleList,variables, variablesP):
     Goal = {'value': [], 'type': ''}
     for exam in exampleList:
         Goal['value'].append(exam['Output'])
+    print('The example List for enumrating:')
+    print(exampleList)
     Goal['type'] = 'Bool'
     e = Solveit(exampleList, Goal)
     str1 = str(e[0])
     for atom in MapstrM:
         str1 = str1.replace(atom[0], atom[1])
+    print("The result formula: "+str1)
+    print("____________________________")
     return str1
 
 

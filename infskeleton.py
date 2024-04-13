@@ -262,6 +262,7 @@ def unionCommomAndAlterRegex(commonRegex,alterRegex):
         RegexList.append(alterRegex[len(commonRegex)])
     return RegexList
 
+
 def GenerateRecursiveAlterStructure(RegexList, actionToLetterList, letterToActionList):
     firstActions,secondActions=None,None
     regex=r''
@@ -270,42 +271,58 @@ def GenerateRecursiveAlterStructure(RegexList, actionToLetterList, letterToActio
     if len(RegexList)==0:
         return None
     elif len(RegexList)==1:
-        if (RegexList[0]>=MIN_CHAR and RegexList[0]<=MAX_CHAR) or (RegexList[0]==emptyAction):
-            firstActions= letterToActionList[RegexList[0]]  if RegexList[0]!=emptyAction  else emptyActionName 
-            firstAbbrChar=RegexList[0] if RegexList[0]!=emptyAction  else emptyAction
-            regex=firstAbbrChar if RegexList[0]!=emptyAction  else emptyRegex
-        if(RegexList[0]>=MIN_LARGE_CHAR and  RegexList[0]<=MAX_LARGE_CHAR):
-            nestChar=nestToLetterList[RegexList[0]]
-            firstActions=GenerateRecursiveSeqAndLoopStructure(nestChar, actionToLetterList, letterToActionList)  
+        if len(RegexList[0])>1:
+            firstActions=GenerateRecursiveSeqAndLoopStructure(RegexList[0], actionToLetterList, letterToActionList)  
             regex=firstActions.regex
+        else:
+            if (RegexList[0]>=MIN_CHAR and RegexList[0]<=MAX_CHAR) or (RegexList[0]==emptyAction):
+                firstActions= letterToActionList[RegexList[0]]  if RegexList[0]!=emptyAction  else emptyActionName 
+                firstAbbrChar=RegexList[0] if RegexList[0]!=emptyAction  else emptyAction
+                regex=firstAbbrChar if RegexList[0]!=emptyAction  else emptyRegex
+            if(RegexList[0]>=MIN_LARGE_CHAR and  RegexList[0]<=MAX_LARGE_CHAR):
+                nestChar=nestToLetterList[RegexList[0]]
+                firstActions=GenerateRecursiveSeqAndLoopStructure(nestChar, actionToLetterList, letterToActionList)  
+                regex=firstActions.regex
         secondActions=None
         regex=regex+'|'+emptyRegex
     elif len(RegexList)==2:
-        if (RegexList[0]>=MIN_CHAR and RegexList[0]<=MAX_CHAR) or (RegexList[0]==emptyAction):
-            firstActions=letterToActionList[RegexList[0]] if RegexList[0]!=emptyAction  else emptyActionName 
-            firstAbbrChar=RegexList[0] if RegexList[0]!=emptyAction  else emptyAction
-            regex=firstAbbrChar if RegexList[0]!=emptyAction  else emptyRegex
-        if(RegexList[0]>=MIN_LARGE_CHAR and  RegexList[0]<=MAX_LARGE_CHAR):
-            nestChar0=nestToLetterList[RegexList[0]]
-            firstActions=GenerateRecursiveSeqAndLoopStructure(nestChar0, actionToLetterList, letterToActionList)
-            regex+=firstActions.regex
-        if (RegexList[1]>=MIN_CHAR and RegexList[1]<=MAX_CHAR)  or (RegexList[1]==emptyAction) :
-            firstActions=letterToActionList[RegexList[1]] if RegexList[1]!=emptyAction  else emptyActionName 
-            secondAbbrChar=RegexList[1] if RegexList[1]!=emptyAction  else emptyAction
-            regex=regex+'|'+(secondAbbrChar if RegexList[1]!=emptyAction  else emptyRegex)
-        if(RegexList[1]>=MIN_LARGE_CHAR and  RegexList[1]<=MAX_LARGE_CHAR):
-            nestChar1=nestToLetterList[RegexList[1]]
-            secondActions=GenerateRecursiveSeqAndLoopStructure(nestChar1, actionToLetterList, letterToActionList)  
-            regex=regex+'|'+secondActions.regex        
+        if len(RegexList[0])>1:
+            firstActions=GenerateRecursiveSeqAndLoopStructure(RegexList[0], actionToLetterList, letterToActionList)
+            regex+=firstActions.regex            
+        else:
+            if (RegexList[0]>=MIN_CHAR and RegexList[0]<=MAX_CHAR) or (RegexList[0]==emptyAction):
+                firstActions=letterToActionList[RegexList[0]] if RegexList[0]!=emptyAction  else emptyActionName 
+                firstAbbrChar=RegexList[0] if RegexList[0]!=emptyAction  else emptyAction
+                regex=firstAbbrChar if RegexList[0]!=emptyAction  else emptyRegex
+            if(RegexList[0]>=MIN_LARGE_CHAR and  RegexList[0]<=MAX_LARGE_CHAR):
+                nestChar0=nestToLetterList[RegexList[0]]
+                firstActions=GenerateRecursiveSeqAndLoopStructure(nestChar0, actionToLetterList, letterToActionList)
+                regex+=firstActions.regex
+        if len(RegexList[1])>1:
+            secondActions=GenerateRecursiveSeqAndLoopStructure(RegexList[1], actionToLetterList, letterToActionList)  
+            regex=regex+'|'+secondActions.regex 
+        else:
+            if (RegexList[1]>=MIN_CHAR and RegexList[1]<=MAX_CHAR)  or (RegexList[1]==emptyAction) :
+                secondActions=letterToActionList[RegexList[1]] if RegexList[1]!=emptyAction  else emptyActionName 
+                secondAbbrChar=RegexList[1] if RegexList[1]!=emptyAction  else emptyAction
+                regex=regex+'|'+(secondAbbrChar if RegexList[1]!=emptyAction  else emptyRegex)
+            if(RegexList[1]>=MIN_LARGE_CHAR and  RegexList[1]<=MAX_LARGE_CHAR):
+                nestChar1=nestToLetterList[RegexList[1]]
+                secondActions=GenerateRecursiveSeqAndLoopStructure(nestChar1, actionToLetterList, letterToActionList)  
+                regex=regex+'|'+secondActions.regex        
     else:
-        if (RegexList[0]>=MIN_CHAR and RegexList[0]<=MAX_CHAR)  or (RegexList[0]==emptyAction) :
-            firstActions=letterToActionList[RegexList[0]]  if RegexList[0]!=emptyAction  else emptyActionName 
-            firstAbbrChar=RegexList[0] if RegexList[0]!=emptyAction  else emptyAction
-            regex=firstAbbrChar if RegexList[0]!=emptyAction  else emptyRegex
-        if(RegexList[0]>=MIN_LARGE_CHAR and  RegexList[0]<=MAX_LARGE_CHAR):
-            nestChar0=nestToLetterList[RegexList[0]]
-            firstActions=GenerateRecursiveSeqAndLoopStructure(nestChar0, actionToLetterList, letterToActionList)
+        if len(RegexList[0])>1:
+            firstActions=GenerateRecursiveSeqAndLoopStructure(RegexList[0], actionToLetterList, letterToActionList)
             regex+=firstActions.regex
+        else:
+            if (RegexList[0]>=MIN_CHAR and RegexList[0]<=MAX_CHAR)  or (RegexList[0]==emptyAction) :
+                firstActions=letterToActionList[RegexList[0]]  if RegexList[0]!=emptyAction  else emptyActionName 
+                firstAbbrChar=RegexList[0] if RegexList[0]!=emptyAction  else emptyAction
+                regex=firstAbbrChar if RegexList[0]!=emptyAction  else emptyRegex
+            if(RegexList[0]>=MIN_LARGE_CHAR and  RegexList[0]<=MAX_LARGE_CHAR):
+                nestChar0=nestToLetterList[RegexList[0]]
+                firstActions=GenerateRecursiveSeqAndLoopStructure(nestChar0, actionToLetterList, letterToActionList)
+                regex+=firstActions.regex
         secondActions=GenerateRecursiveAlterStructure(RegexList[1:], actionToLetterList, letterToActionList)
         regex=regex+'|'+secondActions.regex
     regex='('+regex+')'
@@ -558,7 +575,6 @@ def infskeleton(ItemPlan, actionToLetterList, letterToActionList):
     print('The regex List of program:')
     print(RegexList)
     GenProgram = GenerateRecursiveProgram(RegexList, actionToLetterList, letterToActionList)
-
     print("\n9. The Program Skeleton:")
     phi = 1
     print(preorderTraversal(GenProgram))

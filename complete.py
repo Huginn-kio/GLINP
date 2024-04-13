@@ -301,10 +301,11 @@ def StringToPlan(letters):
 def traversalPlanToFindSplitPoint(plan_char,r1,r2,start):
     i=start
     while i<len(plan_char)-1:
-        isR1Match=custom_match(re.compile(r1),plan_char[0:i],2)
-        isR2Match=custom_match(re.compile(r2),plan_char[i:],2)
+        isR1Match=custom_match(re.compile(r1),str(plan_char[0:i]),2)
+        isR2Match=custom_match(re.compile(r2),str(plan_char[i:]),2)
         if(isR1Match and isR2Match):
             return i 
+        i=i+1
     return -1
 
 def complete(genPlan, state_plans):
@@ -338,10 +339,11 @@ def complete(genPlan, state_plans):
                 genPlan.examNeg.add(copy.deepcopy(state))
                 Omega2.append((state,plan))
             else:
+                print("BOOM!!!!")
                 return genPlan
         genPlan.firstActions=complete(genPlan.firstActions, Omega1)
         genPlan.secondActions=complete(genPlan.secondActions, Omega2)
-        genPlan.condition==SymFormula(genPlan)
+        genPlan.condition=SymFormula(genPlan)
     elif genPlan.flag=='Loop':
         Omega1=list()
         Omega2=list()
@@ -409,6 +411,7 @@ def complete(genPlan, state_plans):
             plan_char=planToString(plan)
             planInR1,planInR2,planInR=plan_char,plan_char,plan_char
             isRMatch=custom_match(re.compile(r),planInR,2)
+            isR1Match=custom_match(re.compile(r1),planInR,2)
             matchInR1Plan=isRMatch.group(1) if isRMatch else None
             r1MatchPlan=StringToPlan(matchInR1Plan)
             restR1Plan=replace_first(matchInR1Plan, '', planInR)
@@ -419,13 +422,13 @@ def complete(genPlan, state_plans):
             restR2Plan=replace_first(matchInR2Plan, '', restR1Plan)
             r2MatchPlan=StringToPlan(matchInR2Plan)
             isR2Applicable,runR2State=stateTransition(matchInR2Plan,runR1State)
-            if(isRMatch and isR1Applicable and isR2Match and isR2Applicable and restR2Plan==''):
+            if(isRMatch and isR1Match and isR1Applicable and isR2Match and isR2Applicable and restR2Plan==''):
                 Omega1.append((state,r1MatchPlan))
                 Omega2.append((runR1State,r2MatchPlan))
             else:
                 start=1
-                while(start<splitPoint-1):
-                    splitPoint=traversalPlanToFindSplitPoint(r1,r2,plan,start)
+                while(start<len(plan)-1):
+                    splitPoint=traversalPlanToFindSplitPoint(plan,r1,r2,start)
                     if splitPoint!=-1:
                         isSpliteR1Applicable,runSpliteR1State=stateTransition(plan[0:splitPoint],state)
                         isSpliteR2Applicable,runSpliteR2State=stateTransition(plan[splitPoint:],runSpliteR1State)

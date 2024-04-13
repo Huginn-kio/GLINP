@@ -22,17 +22,16 @@ def custom_match(pattern, string, flags=0):
 
 #pattern=r'(a)(((ab)*|(a|e))aa((aac)*a*)*)'
 #string = 'aababaaaacaacaaaacaacaa'
-pattern=r'a|^$'
-string = 'b'
+pattern=r'((c)*)((((a)*))((((|(((b)*)(e((a)*)))))(((c)((((|(d(((((c)*)a)*)(((c(((a)*)(((c)*)(e(((a)*)(b(d(a(((c)*)a)))))))))*)(c(((a)*)((c)*))))))))(((e)(((((c((((a)*)(b(d(a(((c)*)(a(c(((a)*)(((c)*)e)))))))))*))|(|c)))(((((a)*))(((d)((|(b(a(((c)*)(a(c(((a)*)(((b)*)(((e(((a)*)(b(d(a(((c)*)(a(c(((a)*)((c)*))))))))))*)(e(((a)*)d)))))))))))))))))))))))))))'
+string = 'ccaaacecaaadbaccacaaabbeaaabdaccacaaacceaaabdaccacaaacceaaabdaccacaaacceaaad'
 match=custom_match(pattern, string)
 if match:
     # 使用match.group(1)来获取第一个子模式的匹配内容
     print("1 part:", match.group(1))
     # 使用match.group(2)来获取第二个子模式的匹配内容
-    print("2 part:", match.group(2))
+    print("2 part:", match.group(3))
 else:
     print("No match found.")
-
 
 
 import re
@@ -74,3 +73,34 @@ def replace_last(text, old, new):
 original_text = "((abc)*a)(((abc)*a)*)"
 new_text = replace_last(original_text, "*", "{1,}")
 print(new_text)  # 输出: hello oldold new oldworld
+
+
+
+
+
+
+import re
+ 
+text = "ccaaacecaaadbaccacaaabbeaaabdaccacaaacceaaabdaccacaaacceaaabdaccacaaacceaaad"
+pattern = r"((c)*)((((a)*))((((|(((b)*)(e((a)*)))))(((c)((((|(d(((((c)*)a)*)(((c(((a)*)(((c)*)(e(((a)*)(b(d(a(((c)*)a)))))))))*)(c(((a)*)((c)*))))))))(((e)(((((c((((a)*)(b(d(a(((c)*)(a(c(((a)*)(((c)*)e)))))))))*))|(|c)))(((((a)*))(((d)((|(b(a(((c)*)(a(c(((a)*)(((b)*)(((e(((a)*)(b(d(a(((c)*)(a(c(((a)*)((c)*))))))))))*)(e(((a)*)d)))))))))))))))))))))))))))" 
+ 
+matches = re.findall(pattern, text)
+print(1)
+print(matches) 
+print(2)
+
+[('cc', 'c', 'aaacecaaad', 'aaa', 'aaa', 'a', 'cecaaad', 'cecaaad', '', '', '', '', '', '', '', '', 'cecaaad', 'cecaaad', 'c', 'ecaaad', 'ecaaad', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'ecaaad', 'ecaaad', 'e', 'caaad', 'caaad', 'c', 'c', 'c', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'aaad', 'aaad', 'aaa', 'aaa', 'a', 'd', 'd', 'd', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''), 
+ ('c', 'c', 'ceaaad', '', '', '', 'ceaaad', 'ceaaad', '', '', '', '', '', '', '', '', 'ceaaad', 'ceaaad', 'c', 'eaaad', 'eaaad', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'eaaad', 'eaaad', 'e', 'aaad', 'aaad', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'aaad', 'aaad', 'aaa', 'aaa', 'a', 'd', 'd', 'd', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '')]
+
+
+
+
+import re
+ 
+pattern = re.compile(r'python')
+match = pattern.search('I love python')
+ 
+if match:
+    print('Matched')
+else:
+    print('Not Matched')
