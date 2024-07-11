@@ -6,7 +6,9 @@ from complete import completeMain
 from generateinit import modifyGenerateInitialState, addInitialState
 from generateplan import generateItemPlan
 from infskeleton import infskeleton, printOutProg,computeDepthOfProg
-from verifyProgram import  verifyProgram
+# from verifyProgram import  verifyProgram
+from verifyPseudoProgram import isPseudo, verifyPseudoProgram
+
 default=3
 #the bound of variable
 bound=default
@@ -49,8 +51,12 @@ def generatePlanningProgram(domain):
     print("------------------------------------------------------")
 
     root = ''
-    root = './domain/' + domain
-    modifyGenerateInitialState(domain,bound,stateSize,modelSort)
+    if modelSort == 1:
+        root = './domain/' + domain
+        modifyGenerateInitialState(domain,bound,stateSize,modelSort)
+    elif modelSort == 2:
+        root = './domain/' + domain + '/Random'
+        modifyGenerateInitialState(domain,bound,stateSize,modelSort)
 
     i = 1
     while i <= stateSize:
@@ -94,11 +100,18 @@ def generatePlanningProgram(domain):
 def GenerateGLINP(domain):
     print("\n------------------------------------------------------")
     # verify restricted planning program
-    e1 = time.time()
+    # e1 = time.time()
     GenCode, actionList, proList, numList = generatePlanningProgram(domain)
-    e2 = time.time()
-    print('Generation Time: %fs' % (e2 - e1))
+    # e2 = time.time()
+    # print('Generation Time: %fs' % (e2 - e1))
 
+    if isPseudo(GenCode, actionList, proList, numList) == True:
+        print('The program is PP.')
+        res, states = verifyPseudoProgram(domain, GenCode, actionList, proList, numList)
+
+        if res == False:
+            print('The program is not correct')
+            print(states)
     print()
     print("#######################################################")
     print("##################                  ###################")
@@ -116,6 +129,8 @@ if __name__ == "__main__":
                 bound = int(value)
             if option in ("-n", "--number"):
                 stateSize = int(value)
+            if option in ("-m", "--model"):
+                modelSort = int(value)
     except:
         print("#############################################################################")
         print("Incorrect run command.")

@@ -171,9 +171,9 @@ def Program2Logic(program, proList, numList, root, preproV, prenumV, postproV, p
             propZ3pre, propZ3post, numZ3pre, numZ3post = generateZ3Variable(proList, numList, str(root) + str(1) + 'i',str(root) + str(1) + 'o')
             axioms += axiomsNew
         elif program.flag=='Branch':
-
+            print(123)
         elif program.flag=='Loop':
-
+            print(123)
     return axiom
 
 # #prog程序，命题变量集，数值变量集，变量名前缀，输入命题Z3变量，输入数值Z3变量，输出命题Z3变量，输出数值Z3变量

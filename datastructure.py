@@ -23,15 +23,15 @@ class Item:
       self.symbol =''
 
 
-class Program:
-    def __init__(self,flag,actionList,condition="condition"):
-        self.flag=flag
-        self.actionList=actionList
-        self.condition=condition
-        self.strcondition="phi"
-        self.examPos=set()
-        self.examNeg=set()
-        self.example=[]
+# class Program:
+#     def __init__(self,flag,actionList,condition="condition"):
+#         self.flag=flag
+#         self.actionList=actionList
+#         self.condition=condition
+#         self.strcondition="phi"
+#         self.examPos=set()
+#         self.examNeg=set()
+#         self.example=[]
 
 
 class Prog:
